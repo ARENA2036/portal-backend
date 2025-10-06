@@ -40,6 +40,11 @@ on:
     branches:
       - 'main'
   workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'tag'
+        required: true
+        default: 'latest'
 
 env:
   IMAGE_NAMESPACE: "constructx.azurecr.io"
@@ -81,8 +86,7 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=latest
-            type=raw,value=${{ github.sha }}
+            type=raw,value=${{ github.event.inputs.image_tag }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
@@ -92,7 +96,7 @@ jobs:
           platforms: linux/amd64, linux/arm64
           pull: true
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}, ${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
 
       # https://github.com/peter-evans/dockerhub-description
