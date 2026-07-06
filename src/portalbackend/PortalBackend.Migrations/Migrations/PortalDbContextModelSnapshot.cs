@@ -35,7 +35,7 @@ namespace Org.Eclipse.TractusX.Portal.Backend.PortalBackend.Migrations.Migration
             modelBuilder
                 .HasDefaultSchema("portal")
                 .UseCollation("en_US.utf8")
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -493,6 +493,26 @@ namespace Org.Eclipse.TractusX.Portal.Backend.PortalBackend.Migrations.Migration
                         {
                             Id = 210,
                             Label = "RETRIGGER_REMOVE_KEYCLOAK_USERS"
+                        },
+                        new
+                        {
+                            Id = 211,
+                            Label = "TRIGGER_CALLBACK_OSP_CREATED"
+                        },
+                        new
+                        {
+                            Id = 212,
+                            Label = "RETRIGGER_CALLBACK_OSP_CREATED"
+                        },
+                        new
+                        {
+                            Id = 213,
+                            Label = "TRIGGER_CALLBACK_OSP_INVITED"
+                        },
+                        new
+                        {
+                            Id = 214,
+                            Label = "RETRIGGER_CALLBACK_OSP_INVITED"
                         },
                         new
                         {

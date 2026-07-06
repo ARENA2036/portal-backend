@@ -41,8 +41,17 @@ public interface ICompanyRepository
 
     void AttachAndModifyCompany(Guid companyId, Action<Company>? initialize, Action<Company> modify);
 
-    Address CreateAddress(string city, string streetname, string region, string countryAlpha2Code, Action<Address>? setOptionalParameters = null);
+    Task CreateCustomerWallet(Guid companyId, string did, JsonDocument didDocument);
 
+    Task<bool> IsBringYourOwnWallet(Guid applicationId);
+
+    Task<Guid> GetApplicationIdByCompanyId(Guid companyId);
+
+    Task<bool> IsDidInUse(string did);
+
+    Task<string?> GetCompanyHolderDidAsync(Guid companyId);
+
+    Address CreateAddress(string city, string streetname, string region, string countryAlpha2Code, Action<Address>? setOptionalParameters = null);
     void AttachAndModifyAddress(Guid addressId, Action<Address>? initialize, Action<Address> modify);
 
     void CreateUpdateDeleteIdentifiers(Guid companyId, IEnumerable<(UniqueIdentifierId UniqueIdentifierId, string Value)> initialItems, IEnumerable<(UniqueIdentifierId UniqueIdentifierId, string Value)> modifiedItems);
@@ -170,13 +179,15 @@ public interface ICompanyRepository
 
     Task<(bool IsValidCompany, string CompanyName, bool IsAllowed)> CheckCompanyAndCompanyRolesAsync(Guid companyId, IEnumerable<CompanyRoleId> companyRoles);
     Task<OnboardingServiceProviderCallbackResponseData> GetCallbackData(Guid companyId);
-    Task<(bool HasCompanyRole, Guid? OnboardingServiceProviderDetailId, OspDetails? OspDetails)> GetCallbackEditData(Guid companyId, CompanyRoleId companyRoleId);
+    Task<(bool HasCompanyRole, Guid? OnboardingServiceProviderDetailId, OspCallbackDetails? OspDetails)> GetCallbackEditData(Guid companyId, CompanyRoleId companyRoleId);
     void AttachAndModifyOnboardingServiceProvider(Guid onboardingServiceProviderDetailId, Action<OnboardingServiceProviderDetail>? initialize, Action<OnboardingServiceProviderDetail> setOptionalFields);
     OnboardingServiceProviderDetail CreateOnboardingServiceProviderDetails(Guid companyId, string callbackUrl, string authUrl, string clientId, byte[] clientSecret, byte[]? initializationVector, int encryptionMode);
     Task<bool> CheckBpnExists(string bpn);
     void CreateWalletData(Guid companyId, string did, JsonDocument didDocument, string clientId, byte[] clientSecret, byte[]? initializationVector, int encryptionMode, string authenticationServiceUrl);
+    void AttachAndModifyWalletData(Guid walletId, Action<CompanyWalletData>? initialize, Action<CompanyWalletData> modify);
     Task<(bool Exists, JsonDocument DidDocument)> GetDidDocumentById(string bpn);
     IAsyncEnumerable<(Guid CompanyId, IEnumerable<Guid> SubmittedApplicationIds)> GetCompanySubmittedApplicationIdsByBpn(string bpn);
+    Task<Guid> GetCopmanyActiveWalletId(string bpn);
     Task<(string? Bpn, string? Did, string? WalletUrl)> GetDimServiceUrls(Guid companyId);
     Task<(string? Holder, string? BusinessPartnerNumber, WalletInformation? WalletInformation)> GetWalletData(Guid identityId);
     void RemoveProviderCompanyDetails(Guid providerCompanyDetailId);

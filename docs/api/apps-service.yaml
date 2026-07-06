@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Org.Eclipse.TractusX.Portal.Backend.Apps.Service
-  version: v2.5.0
+  version: v2.6.0
 paths:
   '/api/apps/AppChange/{appId}/role/activeapp':
     post:
@@ -3653,6 +3653,10 @@ components:
         - MANUAL_DECLINE_OSP
         - REMOVE_KEYCLOAK_USERS
         - RETRIGGER_REMOVE_KEYCLOAK_USERS
+        - TRIGGER_CALLBACK_OSP_CREATED
+        - RETRIGGER_CALLBACK_OSP_CREATED
+        - TRIGGER_CALLBACK_OSP_INVITED
+        - RETRIGGER_CALLBACK_OSP_INVITED
         - SEND_MAIL
         - RETRIGGER_SEND_MAIL
         - INVITATION_CREATE_CENTRAL_IDP

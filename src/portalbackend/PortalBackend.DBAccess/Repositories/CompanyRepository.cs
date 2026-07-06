@@ -67,6 +67,64 @@ public class CompanyRepository(PortalDbContext context) : ICompanyRepository
         setOptionalParameters?.Invoke(address);
         return context.Addresses.Add(address).Entity;
     }
+    public async Task CreateCustomerWallet(Guid companyId, string did, JsonDocument didDocument)
+    {
+        var walletId = await context.CompanyWalletDatas
+            .Where(wallet => wallet.CompanyId == companyId)
+            .Select(wallet => wallet.Id)
+            .SingleOrDefaultAsync();
+
+        var wallet = new CompanyWalletData(
+            walletId == Guid.Empty ? Guid.NewGuid() : walletId,
+            companyId,
+            did,
+            didDocument,
+            BringYourOwnWalletClientFields.Identification,
+            new byte[1],
+            new byte[1],
+            default,
+            BringYourOwnWalletClientFields.NotUsed);
+
+        if (walletId != Guid.Empty)
+        {
+            context.CompanyWalletDatas.Entry(wallet).State = EntityState.Modified;
+        }
+        else
+        {
+            context.CompanyWalletDatas.Add(wallet);
+        }
+    }
+
+    public Task<bool> IsBringYourOwnWallet(Guid applicationId)
+    {
+        return context.CompanyApplications
+                .Where(app => app.Id == applicationId)
+                .Join(context.CompanyWalletDatas,
+                    app => app.CompanyId,
+                    wallet => wallet.CompanyId,
+                    (app, wallet) => wallet)
+                .AnyAsync(wallet => wallet.ClientId == BringYourOwnWalletClientFields.Identification);
+    }
+
+    public Task<Guid> GetApplicationIdByCompanyId(Guid companyId) =>
+        context.CompanyApplications
+            .AsNoTracking()
+            .Where(app => app.CompanyId == companyId)
+            .Select(app => app.Id)
+            .SingleOrDefaultAsync();
+
+    public Task<bool> IsDidInUse(string did) =>
+        context.CompanyWalletDatas
+            .AsNoTracking()
+            .Where(wallet => wallet.Did == did)
+            .AnyAsync();
+
+    public Task<string?> GetCompanyHolderDidAsync(Guid companyId) =>
+        context.Companies
+            .AsNoTracking()
+            .Where(company => company.Id == companyId)
+            .Select(company => company.DidDocumentLocation)
+            .SingleOrDefaultAsync();
 
     public void AttachAndModifyAddress(Guid addressId, Action<Address>? initialize, Action<Address> modify)
     {
@@ -334,14 +392,14 @@ public class CompanyRepository(PortalDbContext context) : ICompanyRepository
                 ))
             .SingleAsync();
 
-    public Task<(bool HasCompanyRole, Guid? OnboardingServiceProviderDetailId, OspDetails? OspDetails)> GetCallbackEditData(Guid companyId, CompanyRoleId companyRoleId) =>
+    public Task<(bool HasCompanyRole, Guid? OnboardingServiceProviderDetailId, OspCallbackDetails? OspDetails)> GetCallbackEditData(Guid companyId, CompanyRoleId companyRoleId) =>
         context.Companies.Where(c => c.Id == companyId)
-            .Select(c => new ValueTuple<bool, Guid?, OspDetails?>(
+            .Select(c => new ValueTuple<bool, Guid?, OspCallbackDetails?>(
                 c.CompanyAssignedRoles.Any(role => role.CompanyRoleId == companyRoleId),
                 c.OnboardingServiceProviderDetail!.Id,
                 c.OnboardingServiceProviderDetail == null
                     ? null
-                    : new OspDetails(
+                    : new OspCallbackDetails(
                         c.OnboardingServiceProviderDetail.CallbackUrl,
                         c.OnboardingServiceProviderDetail.AuthUrl,
                         c.OnboardingServiceProviderDetail.ClientId,
@@ -370,6 +428,15 @@ public class CompanyRepository(PortalDbContext context) : ICompanyRepository
     public void CreateWalletData(Guid companyId, string did, JsonDocument didDocument, string clientId, byte[] clientSecret, byte[]? initializationVector, int encryptionMode, string authenticationServiceUrl) =>
         context.CompanyWalletDatas.Add(new CompanyWalletData(Guid.NewGuid(), companyId, did, didDocument, clientId, clientSecret, initializationVector, encryptionMode, authenticationServiceUrl));
 
+    public void AttachAndModifyWalletData(Guid walletId, Action<CompanyWalletData>? initialize, Action<CompanyWalletData> modify)
+    {
+        var walletData = new CompanyWalletData(walletId, Guid.Empty, null!, null!, null!, null!, null, default, null!);
+
+        initialize?.Invoke(walletData);
+        context.Attach(walletData);
+        modify(walletData);
+    }
+
     public Task<(bool Exists, JsonDocument DidDocument)> GetDidDocumentById(string bpn) =>
         context.CompanyWalletDatas
             .Where(x => x.Company!.BusinessPartnerNumber == bpn)
@@ -385,6 +452,13 @@ public class CompanyRepository(PortalDbContext context) : ICompanyRepository
                     .Where(ca => ca.ApplicationStatusId == CompanyApplicationStatusId.SUBMITTED)
                     .Select(ca => ca.Id)))
             .ToAsyncEnumerable();
+
+    public Task<Guid> GetCopmanyActiveWalletId(string bpn) =>
+        context.Companies
+            .Where(x => x.BusinessPartnerNumber == bpn &&
+                x.CompanyWalletData != null)
+            .Select(x => x.CompanyWalletData!.Id)
+            .SingleOrDefaultAsync();
 
     public Task<(string? Bpn, string? Did, string? WalletUrl)> GetDimServiceUrls(Guid companyId) =>
         context.Companies.Where(x => x.Id == companyId)

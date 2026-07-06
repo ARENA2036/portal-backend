@@ -174,6 +174,7 @@ public class OfferSubscriptionsRepository(PortalDbContext dbContext) : IOfferSub
             .SelectMany(user => user.Identity!.Company!.OfferSubscriptions.Where(subscription =>
                 subscription.Offer!.OfferTypeId == OfferTypeId.APP &&
                 subscription.Offer.UserRoles.Any(ur => ur.IdentityAssignedRoles.Any(iar => iar.IdentityId == userId)) &&
+                subscription.OfferSubscriptionStatusId == OfferSubscriptionStatusId.ACTIVE &&
                 subscription.AppSubscriptionDetail!.AppInstance != null &&
                 subscription.AppSubscriptionDetail.AppSubscriptionUrl != null))
             .Select(offerSubscription => new ValueTuple<Guid, Guid, string?, string, Guid, string>(
@@ -501,6 +502,7 @@ public class OfferSubscriptionsRepository(PortalDbContext dbContext) : IOfferSub
             .Select(os => new OfferSubscriptionConnectorData(
                 os.Id,
                 os.Company!.Name,
+                os.Company!.Shortname,
                 os.Offer!.Name,
                 os.ConnectorAssignedOfferSubscriptions.Select(c => c.ConnectorId)
             ))

@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Org.Eclipse.TractusX.Portal.Backend.Administration.Service
-  version: v2.5.0
+  version: v2.6.0
 paths:
   /api/administration/companydata/ownCompanyDetails:
     get:
@@ -3140,6 +3140,68 @@ paths:
           description: Internal Server Error
         '401':
           description: The User is unauthorized
+  '/api/administration/registration/Network/{externalId}/retrigger-callback-osp-created':
+    post:
+      tags:
+        - Network
+      summary: 'Retriggers the last failed step (Authorization required - Roles: approve_new_partner)'
+      parameters:
+        - name: externalId
+          in: path
+          description: Id of the externalId that should be triggered
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Empty response on success.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No registration found for the externalId.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+        '401':
+          description: The User is unauthorized
+  '/api/administration/registration/Network/{externalId}/retrigger-callback-osp-invited':
+    post:
+      tags:
+        - Network
+      summary: 'Retriggers the last failed step (Authorization required - Roles: approve_new_partner)'
+      parameters:
+        - name: externalId
+          in: path
+          description: Id of the externalId that should be triggered
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Empty response on success.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No registration found for the externalId.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+        '401':
+          description: The User is unauthorized
   '/api/administration/registration/Network/{externalId}/retrigger-remove-keycloak-user':
     post:
       tags:
@@ -3579,6 +3641,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+        '401':
+          description: The User is unauthorized
+    patch:
+      tags:
+        - Registration
+      summary: 'Updates the Did Document for the wallet (Authorization required - Roles: store_didDocument)'
+      parameters:
+        - name: bpn
+          in: path
+          description: BusinessPartnerNumber for dim
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Did Document for updating
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DidDocumentData'
+      responses:
+        '204':
+          description: Empty response on success.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No application found for the bpn.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Either the CompanyApplication is not in status Confirmed or the Company is not ACTIVE or Wallet does not exist.
         '500':
           description: Internal Server Error
         '401':
@@ -6291,6 +6391,9 @@ components:
           format: date-time
         companyName:
           type: string
+        companyShortName:
+          type: string
+          nullable: true
         companyRoles:
           type: array
           items:
@@ -6355,6 +6458,9 @@ components:
           format: date-time
         companyName:
           type: string
+        companyShortName:
+          type: string
+          nullable: true
         email:
           type: string
           nullable: true
@@ -6943,6 +7049,9 @@ components:
         hostCompanyName:
           type: string
           nullable: true
+        hostCompanyShortName:
+          type: string
+          nullable: true
         selfDescriptionDocumentId:
           type: string
           format: uuid
@@ -6985,11 +7094,14 @@ components:
           $ref: '#/components/schemas/ConnectorTypeId'
         name:
           type: string
+        hostCompanyName:
+          type: string
+        hostCompanyShortName:
+          type: string
+          nullable: true
         companyId:
           type: string
           format: uuid
-        hostCompanyName:
-          type: string
         skippedDate:
           type: string
           format: date-time
@@ -7070,6 +7182,11 @@ components:
         - ASC
         - DESC
       type: string
+    DidDocumentData:
+      type: object
+      properties:
+        didDocument: { }
+      additionalProperties: false
     DimUrlsResponse:
       type: object
       properties:
@@ -7655,6 +7772,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CompanyUniqueIdData'
+        holderDid:
+          type: string
+          nullable: true
         externalId:
           type: string
         userDetails:
@@ -7737,6 +7857,10 @@ components:
         - MANUAL_DECLINE_OSP
         - REMOVE_KEYCLOAK_USERS
         - RETRIGGER_REMOVE_KEYCLOAK_USERS
+        - TRIGGER_CALLBACK_OSP_CREATED
+        - RETRIGGER_CALLBACK_OSP_CREATED
+        - TRIGGER_CALLBACK_OSP_INVITED
+        - RETRIGGER_CALLBACK_OSP_INVITED
         - SEND_MAIL
         - RETRIGGER_SEND_MAIL
         - INVITATION_CREATE_CENTRAL_IDP

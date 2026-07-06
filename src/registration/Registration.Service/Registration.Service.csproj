@@ -40,19 +40,20 @@
 
     <Message Text="generating openapi v$(Version)" Importance="high" />
     <Exec Command="dotnet tool restore" />
-    <Exec Command="dotnet tool run swagger tofile --yaml --output ../../../docs/api/registration-service.yaml $(OutputPath)$(AssemblyName).dll v$(Version)" EnvironmentVariables="DOTNET_ROLL_FORWARD=LatestMajor;SKIP_CONFIGURATION_VALIDATION=true;MVC_ROUTING_BASEPATH=api/registration" />
+    <Exec Command="dotnet tool run swagger tofile --yaml --output ../../../docs/api/registration-service.yaml $(OutputPath)$(AssemblyName).dll v$(Version)" EnvironmentVariables="DOTNET_ROLL_FORWARD=LatestMinor;SKIP_CONFIGURATION_VALIDATION=true;MVC_ROUTING_BASEPATH=api/registration" />
   </Target>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.7">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
     <PackageReference Include="PasswordGenerator" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\externalsystems\UniversalDidResolver.Library\UniversalDidResolver.Library.csproj" />
     <ProjectReference Include="..\..\keycloak\Keycloak.Authentication\Keycloak.Authentication.csproj" />
     <ProjectReference Include="..\..\portalbackend\PortalBackend.DBAccess\PortalBackend.DBAccess.csproj" />
     <ProjectReference Include="..\..\processes\ApplicationChecklist.Config\ApplicationChecklist.Config.csproj" />
