@@ -88,5 +88,6 @@
         "dotenv",
         "editorconfig"
     ],
-    "dotnet-test-explorer.testProjectPath": "tests/**/*csproj"
+    "dotnet-test-explorer.testProjectPath": "tests/**/*csproj",
+    "livePreview.defaultPreviewPath": "/src/mailing/Mailing.Template/EmailTemplates/additional_user_invitation.html"
 }
