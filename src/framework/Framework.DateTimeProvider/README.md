@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework DateTimeProvider
+# Arena-X Portal Backend Framework DateTimeProvider
 
-The Catena-X Portal Backend Framework DateTimeProvider library provides a DateTimeProvider for your .NET application.
+The Arena-X Portal Backend Framework DateTimeProvider library provides a DateTimeProvider for your .NET application.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

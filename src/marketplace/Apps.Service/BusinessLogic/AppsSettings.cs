@@ -36,7 +36,7 @@ public class AppsSettings
     /// <value></value>
     [Required]
     [DistinctValues("x => x.ClientId")]
-    public IEnumerable<UserRoleConfig> CatenaAdminRoles { get; set; } = null!;
+    public IEnumerable<UserRoleConfig> ArenaAdminRoles { get; set; } = null!;
 
     /// <summary>
     /// Notification Type Id

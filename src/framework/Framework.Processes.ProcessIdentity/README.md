@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework Processes ProcessIdentity Library
+# Arena-X Portal Backend Framework Processes ProcessIdentity Library
 
-The Catena-X Portal Backend Framework Processes ProcessIdentity Library provides some base handling for process identities.
+The Arena-X Portal Backend Framework Processes ProcessIdentity Library provides some base handling for process identities.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

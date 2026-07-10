@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework Logging
+# Arena-X Portal Backend Framework Logging
 
-The Catena-X Portal Backend Framework Logging library provides a useful set of extensions for the logging with Serilog.
+The Arena-X Portal Backend Framework Logging library provides a useful set of extensions for the logging with Serilog.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

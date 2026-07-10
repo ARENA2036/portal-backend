@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework Swagger
+# Arena-X Portal Backend Framework Swagger
 
-The Catena-X Portal Backend Framework Swagger library provides a useful set of extensions for the use of Swagger.
+The Arena-X Portal Backend Framework Swagger library provides a useful set of extensions for the use of Swagger.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

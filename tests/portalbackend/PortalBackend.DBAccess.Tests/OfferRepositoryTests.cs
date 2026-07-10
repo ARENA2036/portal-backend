@@ -506,14 +506,14 @@ public class OfferRepositoryTests : IAssemblyFixture<TestDbFixture>
         if (languageShortName == "en")
         {
             result.OfferProviderData.Agreements.Should().Satisfy(
-                x => x.AgreementId == new Guid("aa0a0000-7fbc-1f2f-817f-bce0502c1091") && x.AgreementName == "I confirm that the application I want to offer has successfully received a Catena-X certificate issued by an official Conformity Assessment Body (CAB). I acknowledge to upload the certificate.",
+                x => x.AgreementId == new Guid("aa0a0000-7fbc-1f2f-817f-bce0502c1091") && x.AgreementName == "I confirm that the application I want to offer has successfully received a Arena-X certificate issued by an official Conformity Assessment Body (CAB). I acknowledge to upload the certificate.",
                 x => x.AgreementId == new Guid("aa0a0000-7fbc-1f2f-817f-bce0502c1015") && x.AgreementName == "Data Sovereignty Guidelines",
                 x => x.AgreementId == new Guid("aa0a0000-7fbc-1f2f-817f-bce0502c1016") && x.AgreementName == "Marketplace Terms & Conditions");
         }
         else if (languageShortName == "de")
         {
             result.OfferProviderData.Agreements.Should().Satisfy(
-                x => x.AgreementId == new Guid("aa0a0000-7fbc-1f2f-817f-bce0502c1091") && x.AgreementName == "Ich bestätige, dass die App, die ich anbieten möchte, erfolgreich ein Catena-X-Zertifikat erhalten hat, das von einer offiziellen Konformitätsbewertungsstelle ausgestellt wurde. Ich bestätige, das Zertifikat hochzuladen.",
+                x => x.AgreementId == new Guid("aa0a0000-7fbc-1f2f-817f-bce0502c1091") && x.AgreementName == "Ich bestätige, dass die App, die ich anbieten möchte, erfolgreich ein Arena-X-Zertifikat erhalten hat, das von einer offiziellen Konformitätsbewertungsstelle ausgestellt wurde. Ich bestätige, das Zertifikat hochzuladen.",
                 x => x.AgreementId == new Guid("aa0a0000-7fbc-1f2f-817f-bce0502c1015") && x.AgreementName == "Richtlinien zur Datensouveränität",
                 x => x.AgreementId == new Guid("aa0a0000-7fbc-1f2f-817f-bce0502c1016") && x.AgreementName == "Allgemeine Geschäftsbedingungen - Marktplatz");
         }

@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework Processes Library
+# Arena-X Portal Backend Framework Processes Library
 
-The Catena-X Portal Backend Framework Processes Library provides some base models.
+The Arena-X Portal Backend Framework Processes Library provides some base models.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

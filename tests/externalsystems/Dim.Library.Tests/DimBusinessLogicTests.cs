@@ -655,19 +655,19 @@ public class DimBusinessLogicTests
                                                 "https://www.w3.org/ns/did/v1",
                                                 "https://w3id.org/security/suites/jws-2020/v1"
                                             ],
-                                            "id": "did:web:portal-backend.int.catena-x.net:api:administration:staticdata:did:BPNL000000006TCJ",
+                                            "id": "did:web:portal-backend.int.arena-x.net:api:administration:staticdata:did:BPNL000000006TCJ",
                                             "service": [
                                                 {
                                                     "type": "CredentialService",
                                                     "serviceEndpoint": "https://dis-agent-prod.eu10.dim.cloud.sap/api/v1.0.0/iatp",
-                                                    "id": "did:web:portal-backend.int.catena-x.net:api:administration:staticdata:did:BPNL000000006TCJ#CredentialService"
+                                                    "id": "did:web:portal-backend.int.arena-x.net:api:administration:staticdata:did:BPNL000000006TCJ#CredentialService"
                                                 }
                                             ],
                                             "verificationMethod": [
                                                 {
-                                                    "id": "did:web:portal-backend.int.catena-x.net:api:administration:staticdata:did:BPNL000000006TCJ#keys-1c1e0ef5-fa61-4030-9a32-6636f6dd1ea2",
+                                                    "id": "did:web:portal-backend.int.arena-x.net:api:administration:staticdata:did:BPNL000000006TCJ#keys-1c1e0ef5-fa61-4030-9a32-6636f6dd1ea2",
                                                     "type": "JsonWebKey2020",
-                                                    "controller": "did:web:portal-backend.int.catena-x.net:api:administration:staticdata:did:BPNL000000006TCJ",
+                                                    "controller": "did:web:portal-backend.int.arena-x.net:api:administration:staticdata:did:BPNL000000006TCJ",
                                                     "publicKeyJwk": {
                                                         "kty": "EC",
                                                         "crv": "secp256k1",
@@ -677,7 +677,7 @@ public class DimBusinessLogicTests
                                                 }
                                             ],
                                             "authentication": [
-                                                "did:web:portal-backend.int.catena-x.net:api:administration:staticdata:did:BPNL000000006TCJ#keys-1c1e0ef5-fa61-4030-9a32-6636f6dd1ea2"
+                                                "did:web:portal-backend.int.arena-x.net:api:administration:staticdata:did:BPNL000000006TCJ#keys-1c1e0ef5-fa61-4030-9a32-6636f6dd1ea2"
                                             ],
                                             "assertionMethod": [],
                                             "keyAgreement": []

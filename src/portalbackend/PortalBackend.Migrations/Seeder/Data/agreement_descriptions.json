@@ -81,22 +81,22 @@
   },
   {
     "agreement_id": "aa0a0000-7fbc-1f2f-817f-bce0502c1090",
-    "description": "I confirm that my company has successfully received a Catena-X onboarding certificate issued by an official Conformity Assessment Body (CAB). I acknowledge to upload the certificate. For more information visit the association homepage (Link).",
+    "description": "I confirm that my company has successfully received a Arena-X onboarding certificate issued by an official Conformity Assessment Body (CAB). I acknowledge to upload the certificate. For more information visit the association homepage (Link).",
     "language_short_name": "en"
   },
   {
     "agreement_id": "aa0a0000-7fbc-1f2f-817f-bce0502c1090",
-    "description": "Ich bestätige, dass mein Unternehmen ein Catena-X Onboarding-Zertifikat von einer offiziellen Konformitätsbewertungsstelle (CAB) erhalten hat. Ich bestätige, das Zertifikat hochzuladen. Für weitere Informationen besuchen Sie bitte die Vereins-Homepage.",
+    "description": "Ich bestätige, dass mein Unternehmen ein Arena-X Onboarding-Zertifikat von einer offiziellen Konformitätsbewertungsstelle (CAB) erhalten hat. Ich bestätige, das Zertifikat hochzuladen. Für weitere Informationen besuchen Sie bitte die Vereins-Homepage.",
     "language_short_name": "de"
   },
   {
     "agreement_id": "aa0a0000-7fbc-1f2f-817f-bce0502c1091",
-    "description": "I confirm that the application I want to offer has successfully received a Catena-X certificate issued by an official Conformity Assessment Body (CAB). I acknowledge to upload the certificate.",
+    "description": "I confirm that the application I want to offer has successfully received a Arena-X certificate issued by an official Conformity Assessment Body (CAB). I acknowledge to upload the certificate.",
     "language_short_name": "en"
   },
   {
     "agreement_id": "aa0a0000-7fbc-1f2f-817f-bce0502c1091",
-    "description": "Ich bestätige, dass die App, die ich anbieten möchte, erfolgreich ein Catena-X-Zertifikat erhalten hat, das von einer offiziellen Konformitätsbewertungsstelle ausgestellt wurde. Ich bestätige, das Zertifikat hochzuladen.",
+    "description": "Ich bestätige, dass die App, die ich anbieten möchte, erfolgreich ein Arena-X-Zertifikat erhalten hat, das von einer offiziellen Konformitätsbewertungsstelle ausgestellt wurde. Ich bestätige, das Zertifikat hochzuladen.",
     "language_short_name": "de"
   },
   {
@@ -111,12 +111,12 @@
   },
   {
     "agreement_id": "311aac58-932b-4622-be8b-34337e48d70C",
-    "description": "I confirm that the service I want to offer has successfully received a Catena-X certificate issued by an official Conformity Assessment Body (CAB). I acknowledge to upload the certificate.",
+    "description": "I confirm that the service I want to offer has successfully received a Arena-X certificate issued by an official Conformity Assessment Body (CAB). I acknowledge to upload the certificate.",
     "language_short_name": "en"
   },
   {
     "agreement_id": "311aac58-932b-4622-be8b-34337e48d70C",
-    "description": "Ich bestätige, dass der Service, den ich anbieten möchte, erfolgreich ein Catena-X-Zertifikat erhalten hat, das von einer offiziellen Konformitätsbewertungsstelle ausgestellt wurde. Ich bestätige, das Zertifikat hochzuladen.",
+    "description": "Ich bestätige, dass der Service, den ich anbieten möchte, erfolgreich ein Arena-X-Zertifikat erhalten hat, das von einer offiziellen Konformitätsbewertungsstelle ausgestellt wurde. Ich bestätige, das Zertifikat hochzuladen.",
     "language_short_name": "de"
   }
 ]

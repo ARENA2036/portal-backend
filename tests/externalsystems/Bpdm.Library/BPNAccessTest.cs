@@ -74,7 +74,7 @@ public class BPNAccessTest
                 ""nextConfidenceCheckAt"": ""2023-12-29T07:56:51.44798"",
                 ""confidenceLevel"": 0
             },
-            ""isCatenaXMemberData"": true,
+            ""isArenaXMemberData"": true,
             ""createdAt"": ""2023-09-20T05:31:17.090516Z"",
             ""updatedAt"": ""2023-09-20T05:31:17.090523Z"",
             ""legalAddress"": {
@@ -151,7 +151,7 @@ public class BPNAccessTest
                 },
                 ""bpnLegalEntity"": ""BPNL000000000001"",
                 ""bpnSite"": null,
-                ""isCatenaXMemberData"": true,
+                ""isArenaXMemberData"": true,
                 ""createdAt"": ""2023-09-20T05:31:17.084880Z"",
                 ""updatedAt"": ""2023-09-20T05:31:17.096188Z"",
                 ""confidenceCriteria"": {

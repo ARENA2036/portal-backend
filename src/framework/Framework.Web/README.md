@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework Web
+# Arena-X Portal Backend Framework Web
 
-The Catena-X Portal Backend Framework Web library provides a useful set of extensions and functionality to setup a asp net core application.
+The Arena-X Portal Backend Framework Web library provides a useful set of extensions and functionality to setup a asp net core application.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

@@ -35,7 +35,7 @@ namespace Org.Eclipse.TractusX.Portal.Backend.Notifications.Library.Tests;
 
 public class NotificationServiceTests
 {
-    private const string ClientId = "catenax-portal";
+    private const string ClientId = "arenax-portal";
     private static readonly Guid UserId1 = new("857b93b1-8fcb-4141-81b0-ae81950d489e");
     private static readonly Guid UserId2 = new("857b93b1-8fcb-4141-81b0-ae81950d489f");
     private static readonly Guid UserId3 = new("857b93b1-8fcb-4141-81b0-ae81950d48af");

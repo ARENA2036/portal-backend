@@ -42,7 +42,7 @@ namespace Org.Eclipse.TractusX.Portal.Backend.Mailing.Template.Enums
         AdditionalUserInvitation,
 
         /// <summary>
-        /// Email template for Catena-X registration process invitations.
+        /// Email template for Arena-X registration process invitations.
         /// </summary>
         [Path("cx_admin_invitation.html")]
         CxAdminInvitation,

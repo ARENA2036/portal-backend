@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework Identity
+# Arena-X Portal Backend Framework Identity
 
-The Catena-X Portal Backend Framework Identity library provides a useful set of identity handling.
+The Arena-X Portal Backend Framework Identity library provides a useful set of identity handling.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

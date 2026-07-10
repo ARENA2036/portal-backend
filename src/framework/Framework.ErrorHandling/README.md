@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework ErrorHandling Library
+# Arena-X Portal Backend Framework ErrorHandling Library
 
-The Catena-X Portal Backend Framework ErrorHandling Library library provides a useful set of custom exceptions and extensions for error handling.
+The Arena-X Portal Backend Framework ErrorHandling Library library provides a useful set of custom exceptions and extensions for error handling.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

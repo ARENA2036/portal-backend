@@ -32,7 +32,7 @@ public record BpdmLegalEntityDto(
     [property: JsonPropertyName("relations")] IEnumerable<BpdmRelationDto> Relations,
     [property: JsonPropertyName("currentness")] DateTimeOffset Currentness,
     [property: JsonPropertyName("confidenceCriteria")] BpdmConfidenceCriteria? ConfidenceCriteria,
-    [property: JsonPropertyName("isCatenaXMemberData")] bool IsCatenaXMemberData,
+    [property: JsonPropertyName("isArenaXMemberData")] bool IsArenaXMemberData,
     [property: JsonPropertyName("createdAt")] DateTimeOffset CreatedAt,
     [property: JsonPropertyName("updatedAt")] DateTimeOffset UpdatedAt,
     [property: JsonPropertyName("legalAddress")] BpdmLegalEntityAddress? LegalEntityAddress
@@ -88,7 +88,7 @@ public record BpdmLegalEntityAddress
     BpdmPhysicalPostalAddress? PhysicalPostalAddress,
     BpdmAlternativePostalAddress? AlternativePostalAddress,
     [property: JsonPropertyName("confidenceCriteria")] BpdmConfidenceCriteria? ConfidenceCriteria,
-    [property: JsonPropertyName("isCatenaXMemberData")] bool IsCatenaXMemberData
+    [property: JsonPropertyName("isArenaXMemberData")] bool IsArenaXMemberData
 );
 
 public record BpdmLegalEntityAddressState

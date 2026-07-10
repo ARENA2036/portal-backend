@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework DBAccess
+# Arena-X Portal Backend Framework DBAccess
 
-The Catena-X Portal Backend Framework DBAccess library provides a useful set of extensions for database interactions.
+The Arena-X Portal Backend Framework DBAccess library provides a useful set of extensions for database interactions.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

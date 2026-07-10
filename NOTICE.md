@@ -51,8 +51,8 @@ This project uses and has modified the following code:
 
 This project uses the following image content:
 
-* Image: Catena-X Logo
-* Source URL: https://catena-x.net
+* Image: Arena-X Logo
+* Source URL: https://portal.prod.arena2036-x.de
 
 ## Cryptography
 

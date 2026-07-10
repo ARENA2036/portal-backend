@@ -315,11 +315,11 @@ public class AppReleaseBusinessLogic(
 
     /// <inheritdoc/>
     public Task SubmitAppReleaseRequestAsync(Guid appId) =>
-        offerService.SubmitOfferAsync(appId, OfferTypeId.APP, _settings.SubmitAppNotificationTypeIds, _settings.CatenaAdminRoles, _settings.SubmitAppDocumentTypeIds);
+        offerService.SubmitOfferAsync(appId, OfferTypeId.APP, _settings.SubmitAppNotificationTypeIds, _settings.ArenaAdminRoles, _settings.SubmitAppDocumentTypeIds);
 
     /// <inheritdoc/>
     public Task ApproveAppRequestAsync(Guid appId) =>
-        offerService.ApproveOfferRequestAsync(appId, OfferTypeId.APP, _settings.ApproveAppNotificationTypeIds, _settings.ApproveAppUserRoles, _settings.SubmitAppNotificationTypeIds, _settings.CatenaAdminRoles, (_settings.OfferSubscriptionAddress, _settings.OfferDetailAddress), _settings.ActivationUserRoles);
+        offerService.ApproveOfferRequestAsync(appId, OfferTypeId.APP, _settings.ApproveAppNotificationTypeIds, _settings.ApproveAppUserRoles, _settings.SubmitAppNotificationTypeIds, _settings.ArenaAdminRoles, (_settings.OfferSubscriptionAddress, _settings.OfferDetailAddress), _settings.ActivationUserRoles);
 
     private IEnumerable<OfferStatusId> GetOfferStatusIds(OfferStatusIdFilter? offerStatusIdFilter) =>
         offerStatusIdFilter switch
@@ -334,7 +334,7 @@ public class AppReleaseBusinessLogic(
 
     /// <inheritdoc />
     public Task DeclineAppRequestAsync(Guid appId, OfferDeclineRequest data) =>
-        offerService.DeclineOfferAsync(appId, data, OfferTypeId.APP, NotificationTypeId.APP_RELEASE_REJECTION, _settings.ServiceManagerRoles, _settings.AppOverviewAddress, _settings.SubmitAppNotificationTypeIds, _settings.CatenaAdminRoles);
+        offerService.DeclineOfferAsync(appId, data, OfferTypeId.APP, NotificationTypeId.APP_RELEASE_REJECTION, _settings.ServiceManagerRoles, _settings.AppOverviewAddress, _settings.SubmitAppNotificationTypeIds, _settings.ArenaAdminRoles);
 
     /// <inheritdoc />
     public async Task<InReviewAppDetails> GetInReviewAppDetailsByIdAsync(Guid appId)

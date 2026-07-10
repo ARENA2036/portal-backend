@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework Linq
+# Arena-X Portal Backend Framework Linq
 
-The Catena-X Portal Backend Framework Linq library provides a useful set of extensions to work with Linq.
+The Arena-X Portal Backend Framework Linq library provides a useful set of extensions to work with Linq.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

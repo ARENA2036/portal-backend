@@ -76,7 +76,7 @@ public class IssuerComponentBusinessLogicTests
             Scope = "test",
             Username = "user@name",
             BaseAddress = "https://base.address.com",
-            ClientId = "CatenaX",
+            ClientId = "ArenaX",
             ClientSecret = "pass@Secret",
             GrantType = "cred",
             TokenAddress = "https://key.cloak.com",

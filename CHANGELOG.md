@@ -1,6 +1,6 @@
 # Changelog
 
-New features, fixed bugs, known defects and other noteworthy changes to each release of the Catena-X Portal Backend.
+New features, fixed bugs, known defects and other noteworthy changes to each release of the Arena-X Portal Backend.
 
 ## Unreleased
 

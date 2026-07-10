@@ -35,7 +35,7 @@ public class ServiceSettings
 
     [Required]
     [DistinctValues("x => x.ClientId")]
-    public IEnumerable<UserRoleConfig> CatenaAdminRoles { get; init; } = null!;
+    public IEnumerable<UserRoleConfig> ArenaAdminRoles { get; init; } = null!;
 
     [Required]
     [DistinctValues("x => x.ClientId")]

@@ -47,7 +47,7 @@ public class ApplicationActivationTests
     # region Initialization
 
     private const string BusinessPartnerNumber = "CAXLSHAREDIDPZZ";
-    private const string ClientId = "catenax-portal";
+    private const string ClientId = "arenax-portal";
     private const string CompanyName = "Shared Idp Test";
     private static readonly Guid Id = new("d90995fe-1241-4b8d-9f5c-f3909acc6383");
     private static readonly Guid IdWithoutBpn = new("d90995fe-1241-4b8d-9f5c-f3909acc6399");
@@ -248,7 +248,7 @@ public class ApplicationActivationTests
         var ex = await Assert.ThrowsAsync<ConfigurationException>(Act);
 
         //Assert
-        ex.Message.Should().Be("invalid configuration, at least one of the configured roles does not exist in the database: client: catenax-portal, roles: [Company Admin, notexistingrole]");
+        ex.Message.Should().Be("invalid configuration, at least one of the configured roles does not exist in the database: client: arenax-portal, roles: [Company Admin, notexistingrole]");
     }
 
     [Fact]
@@ -282,7 +282,7 @@ public class ApplicationActivationTests
         var ex = await Assert.ThrowsAsync<UnexpectedConditionException>(Act);
 
         //Assert
-        ex.Message.Should().Be("inconsistent data, roles not assigned in keycloak: client: catenax-portal, roles: [IT Admin], error: ");
+        ex.Message.Should().Be("inconsistent data, roles not assigned in keycloak: client: arenax-portal, roles: [IT Admin], error: ");
     }
 
     [Fact]

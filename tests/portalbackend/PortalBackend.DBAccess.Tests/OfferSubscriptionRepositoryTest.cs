@@ -267,7 +267,7 @@ public class OfferSubscriptionRepositoryTest : IAssemblyFixture<TestDbFixture>
             x.Contact.SequenceEqual(new[] { "test@email.com" }) &&
             x.OfferSubscriptionStatus == OfferSubscriptionStatusId.ACTIVE &&
             x.TenantUrl == "https://ec-qas.d13fe27.kyma.ondemand.com" &&
-            x.AppInstanceId == "https://catenax-int-dismantler-s66pftcc.authentication.eu10.hana.ondemand.com" &&
+            x.AppInstanceId == "https://arenax-int-dismantler-s66pftcc.authentication.eu10.hana.ondemand.com" &&
             x.ProcessSteps.Count() == 0);
     }
 

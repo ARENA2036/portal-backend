@@ -48,7 +48,7 @@ namespace Org.Eclipse.TractusX.Portal.Backend.Apps.Service.BusinessLogic.Tests;
 
 public class AppChangeBusinessLogicTest
 {
-    private const string ClientId = "catenax-portal";
+    private const string ClientId = "arenax-portal";
     private static readonly Guid CompanyUserId = Guid.NewGuid();
     private static readonly Guid CompanyId = Guid.NewGuid();
     private readonly IIdentityData _identity;

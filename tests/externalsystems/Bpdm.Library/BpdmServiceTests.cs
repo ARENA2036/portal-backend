@@ -50,7 +50,7 @@ public class BpdmServiceTests
             Username = "user@name",
             BaseAddress = "https://foo.com",
             BusinessPartnerPoolBaseAddress = "https://bar.com",
-            ClientId = "CatenaX",
+            ClientId = "ArenaX",
             ClientSecret = "pass@Secret",
             GrantType = "cred",
             TokenAddress = "https://key.cloak.com",
@@ -700,7 +700,7 @@ public class BpdmServiceTests
             .Which.Memberships.Should().ContainSingle()
             .Which.Should().Match<BpdmCxMembershipDto>(x =>
                 x.Bpn == bpn &&
-                x.IsCatenaXMember
+                x.IsArenaXMember
         );
         // Assert
         result.Should().BeTrue();

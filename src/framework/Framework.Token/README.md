@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework Token
+# Arena-X Portal Backend Framework Token
 
-The Catena-X Portal Backend Framework Token library provides a useful set of extensions and functionality to easily get a authorized HttpClient.
+The Arena-X Portal Backend Framework Token library provides a useful set of extensions and functionality to easily get a authorized HttpClient.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

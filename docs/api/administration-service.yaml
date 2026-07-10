@@ -5837,7 +5837,7 @@ paths:
           required: true
           schema:
             type: string
-          example: CAXSDUMMYCATENAZZ
+          example: CAXSDUMMYARENAXZZ
       responses:
         '200':
           description: The business partner number have been added successfully.

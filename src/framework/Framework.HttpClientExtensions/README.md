@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework
+# Arena-X Portal Backend Framework
 
-The Catena-X Portal Backend Framework HttpClientExtensions library provides a set of useful extensions for the use of HttpClients.
+The Arena-X Portal Backend Framework HttpClientExtensions library provides a set of useful extensions for the use of HttpClients.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

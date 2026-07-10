@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework ErrorHandling Web
+# Arena-X Portal Backend Framework ErrorHandling Web
 
-The Catena-X Portal Backend Framework ErrorHandling Web library provides a general error handler for your asp net core application.
+The Arena-X Portal Backend Framework ErrorHandling Web library provides a general error handler for your asp net core application.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

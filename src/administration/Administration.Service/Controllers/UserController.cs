@@ -271,7 +271,7 @@ public class UserController : ControllerBase
     /// Adds the given business partner number to the user for the given id.
     /// </summary>
     /// <param name="companyUserId" example="ac1cf001-7fbc-1f2f-817f-bce0575a0011">Id of the user to add the business partner numbers to.</param>
-    /// <param name="businessPartnerNumber" example="CAXSDUMMYCATENAZZ">the business partner number that should be added.</param>
+    /// <param name="businessPartnerNumber" example="CAXSDUMMYARENAXZZ">the business partner number that should be added.</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>Example: PUT: api/administration/user/owncompany/users/{companyUserId}/businessPartnerNumbers/{businessPartnerNumber}</remarks>

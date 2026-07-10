@@ -46,12 +46,12 @@ public class BaseSeed
 
         dbContext.Companies.AddRange(new List<Company>
         {
-            new(new Guid("2dc4249f-b5ca-4d42-bef1-7a7a950a4f87"), "Catena-X", CompanyStatusId.ACTIVE,
+            new(new Guid("2dc4249f-b5ca-4d42-bef1-7a7a950a4f87"), "Arena-X", CompanyStatusId.ACTIVE,
                 DateTimeOffset.UtcNow)
             {
                 AddressId = new Guid("b4db3945-19a7-4a50-97d6-e66e8dfd04fb"),
                 Shortname = "Cat-X",
-                BusinessPartnerNumber = "CAXSDUMMYCATENAZZ",
+                BusinessPartnerNumber = "CAXSDUMMYARENAXZZ",
             }
         });
 

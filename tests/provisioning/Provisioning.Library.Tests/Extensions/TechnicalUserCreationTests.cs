@@ -39,7 +39,7 @@ namespace Org.Eclipse.TractusX.Portal.Backend.Provisioning.Library.Tests.Extensi
 
 public class TechnicalUserCreationTests
 {
-    private const string Bpn = "CAXSDUMMYCATENAZZ";
+    private const string Bpn = "CAXSDUMMYARENAXZZ";
     private readonly string _iamUserId = Guid.NewGuid().ToString();
     private readonly Guid _companyId = Guid.NewGuid();
     private readonly Guid _identityId = Guid.NewGuid();

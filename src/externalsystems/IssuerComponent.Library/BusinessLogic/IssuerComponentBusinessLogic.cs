@@ -151,7 +151,7 @@ public class IssuerComponentBusinessLogic(
         var secret = GetDecriptedSecret(walletInformation, isBringYourOwnWallet);
         var callbackUrl = $"{_settings.CallbackBaseUrl}/api/administration/registration/issuer/membershipcredential";
 
-        var data = new CreateMembershipCredentialRequest(holder, businessPartnerNumber, "catena-x",
+        var data = new CreateMembershipCredentialRequest(holder, businessPartnerNumber, "arena-x",
             isBringYourOwnWallet
                 ? null
                 : new TechnicalUserDetails(walletInformation.WalletUrl, walletInformation.ClientId, secret), callbackUrl);

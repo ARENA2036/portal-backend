@@ -130,11 +130,11 @@ public interface IOfferService
     /// <param name="approveOfferNotificationTypeIds"></param>
     /// <param name="approveOfferRoles"></param>
     /// <param name="submitOfferNotificationTypeIds"></param>
-    /// <param name="catenaAdminRoles"></param>
+    /// <param name="arenaAdminRoles"></param>
     /// <param name="mailParams"></param>
     /// <param name="notificationRecipients"></param>
     /// <returns></returns>
-    Task ApproveOfferRequestAsync(Guid offerId, OfferTypeId offerTypeId, IEnumerable<NotificationTypeId> approveOfferNotificationTypeIds, IEnumerable<UserRoleConfig> approveOfferRoles, IEnumerable<NotificationTypeId> submitOfferNotificationTypeIds, IEnumerable<UserRoleConfig> catenaAdminRoles, (string SubscriptionUrl, string DetailUrl) mailParams, IEnumerable<UserRoleConfig> notificationRecipients);
+    Task ApproveOfferRequestAsync(Guid offerId, OfferTypeId offerTypeId, IEnumerable<NotificationTypeId> approveOfferNotificationTypeIds, IEnumerable<UserRoleConfig> approveOfferRoles, IEnumerable<NotificationTypeId> submitOfferNotificationTypeIds, IEnumerable<UserRoleConfig> arenaAdminRoles, (string SubscriptionUrl, string DetailUrl) mailParams, IEnumerable<UserRoleConfig> notificationRecipients);
 
     /// <summary>
     /// Update offer status and create notification for App 
@@ -142,10 +142,10 @@ public interface IOfferService
     /// <param name="offerId">Id of the offer that should be submitted</param>
     /// <param name="offerTypeId">Type of the offer</param>
     /// <param name="notificationTypeIds">Ids for the notifications that are created</param>
-    /// <param name="catenaAdminRoles">Company Admin Roles</param>
+    /// <param name="arenaAdminRoles">Company Admin Roles</param>
     /// <param name="submitAppDocumentTypeIds">Document Type Id</param>
     /// <returns></returns>
-    Task SubmitOfferAsync(Guid offerId, OfferTypeId offerTypeId, IEnumerable<NotificationTypeId> notificationTypeIds, IEnumerable<UserRoleConfig> catenaAdminRoles, IEnumerable<DocumentTypeId> submitAppDocumentTypeIds);
+    Task SubmitOfferAsync(Guid offerId, OfferTypeId offerTypeId, IEnumerable<NotificationTypeId> notificationTypeIds, IEnumerable<UserRoleConfig> arenaAdminRoles, IEnumerable<DocumentTypeId> submitAppDocumentTypeIds);
 
     /// <summary>
     /// Declines the given offer
@@ -157,8 +157,8 @@ public interface IOfferService
     /// <param name="notificationRecipients">Recipients of the notifications</param>
     /// <param name="basePortalAddress">the base portal address</param>
     /// <param name="submitOfferNotificationTypeIds">the submit notification notification type ids</param>
-    /// <param name="catenaAdminRoles">The catena x admin roles</param>
-    Task DeclineOfferAsync(Guid offerId, OfferDeclineRequest data, OfferTypeId offerType, NotificationTypeId notificationTypeId, IEnumerable<UserRoleConfig> notificationRecipients, string basePortalAddress, IEnumerable<NotificationTypeId> submitOfferNotificationTypeIds, IEnumerable<UserRoleConfig> catenaAdminRoles);
+    /// <param name="arenaAdminRoles">The arena x admin roles</param>
+    Task DeclineOfferAsync(Guid offerId, OfferDeclineRequest data, OfferTypeId offerType, NotificationTypeId notificationTypeId, IEnumerable<UserRoleConfig> notificationRecipients, string basePortalAddress, IEnumerable<NotificationTypeId> submitOfferNotificationTypeIds, IEnumerable<UserRoleConfig> arenaAdminRoles);
 
     /// <summary>
     /// Deactivate the given offerStatus by offerId and offerType
@@ -173,9 +173,9 @@ public interface IOfferService
     /// <param name="offerId"></param>
     /// <param name="offerTypeId"></param>
     /// <param name="notificationTypeIds"></param>
-    /// <param name="catenaAdminRoles"></param>
+    /// <param name="arenaAdminRoles"></param>
     /// <returns></returns>
-    Task SubmitServiceAsync(Guid offerId, OfferTypeId offerTypeId, IEnumerable<NotificationTypeId> notificationTypeIds, IEnumerable<UserRoleConfig> catenaAdminRoles);
+    Task SubmitServiceAsync(Guid offerId, OfferTypeId offerTypeId, IEnumerable<NotificationTypeId> notificationTypeIds, IEnumerable<UserRoleConfig> arenaAdminRoles);
 
     /// <summary>
     /// Get offer Document Content for given offertypeId by Id

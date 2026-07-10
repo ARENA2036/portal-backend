@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "a127d567-6397-41fa-97f9-5a5e6dc1849d",
-		"name": "CatenaX Portal Service-local",
+		"name": "ArenaX Portal Service-local",
 		"description": "# Setup Service Collection\n\n1. Create a environment\n2. Add the following variables to the newly created environment\n\n- apiUrl: https://localhost:5001/api/\n- keyCloakUrl: https://devhost:8443/",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},

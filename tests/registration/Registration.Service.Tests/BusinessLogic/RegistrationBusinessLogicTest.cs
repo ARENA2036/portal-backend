@@ -126,7 +126,7 @@ public class RegistrationBusinessLogicTest
         var options = Options.Create(new RegistrationSettings
         {
             BasePortalAddress = "just a test",
-            KeycloakClientID = "CatenaX",
+            KeycloakClientID = "ArenaX",
         });
         _fixture.Inject(options);
         _fixture.Inject(_mailingProcessCreation);
@@ -179,7 +179,7 @@ public class RegistrationBusinessLogicTest
         var result = await sut.GetClientRolesCompositeAsync().ToListAsync();
 
         // Assert
-        A.CallTo(() => _userRoleRepository.GetClientRolesCompositeAsync("CatenaX")).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _userRoleRepository.GetClientRolesCompositeAsync("ArenaX")).MustHaveHappenedOnceExactly();
         result.Should().HaveSameCount(roles)
             .And.ContainInOrder(roles);
     }

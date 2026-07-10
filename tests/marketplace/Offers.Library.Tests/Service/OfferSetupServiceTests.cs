@@ -47,7 +47,7 @@ namespace Org.Eclipse.TractusX.Portal.Backend.Offers.Library.Tests.Service;
 
 public class OfferSetupServiceTests
 {
-    private const string Bpn = "CAXSDUMMYCATENAZZ";
+    private const string Bpn = "CAXSDUMMYARENAXZZ";
     private static readonly Guid CompanyUserCompanyId = new("395f955b-f11b-4a74-ab51-92a526c1973a");
 
     private readonly IIdentityData _identity;
@@ -1303,7 +1303,7 @@ public class OfferSetupServiceTests
         var serviceManagerRoles = Enumerable.Repeat(new UserRoleConfig("Test", ["ServiceManagerRoles"]), 1);
 
         // Act
-        var result = await _sut.ActivateSubscription(offerSubscription.Id, itAdminRoles, serviceManagerRoles, "https://portal-backend.dev.demo.catena-x.net/");
+        var result = await _sut.ActivateSubscription(offerSubscription.Id, itAdminRoles, serviceManagerRoles, "https://portal-backend.dev.demo.arena-x.net/");
 
         // Assert
         var notificationTypeId = NotificationTypeId.APP_SUBSCRIPTION_ACTIVATION;
@@ -1367,7 +1367,7 @@ public class OfferSetupServiceTests
         var serviceManagerRoles = Enumerable.Repeat(new UserRoleConfig("Test", ["ServiceManagerRoles"]), 1);
 
         // Act
-        var result = await _sut.ActivateSubscription(offerSubscription.Id, itAdminRoles, serviceManagerRoles, "https://portal-backend.dev.demo.catena-x.net/");
+        var result = await _sut.ActivateSubscription(offerSubscription.Id, itAdminRoles, serviceManagerRoles, "https://portal-backend.dev.demo.arena-x.net/");
 
         // Assert
         var notificationTypeId = NotificationTypeId.APP_SUBSCRIPTION_ACTIVATION;
@@ -1464,7 +1464,7 @@ public class OfferSetupServiceTests
             .Returns("cl1");
 
         var count = 1;
-        A.CallTo(() => _technicalUserCreation.CreateTechnicalUsersAsync(A<TechnicalUserCreationInfo>._, A<Guid>._, A<IEnumerable<string>>.That.Matches(x => x.Any(y => y == "CAXSDUMMYCATENAZZ")), TechnicalUserTypeId.MANAGED, A<bool>._, A<bool>._, A<ServiceAccountCreationProcessData?>._, A<Action<TechnicalUser>?>._))
+        A.CallTo(() => _technicalUserCreation.CreateTechnicalUsersAsync(A<TechnicalUserCreationInfo>._, A<Guid>._, A<IEnumerable<string>>.That.Matches(x => x.Any(y => y == "CAXSDUMMYARENAXZZ")), TechnicalUserTypeId.MANAGED, A<bool>._, A<bool>._, A<ServiceAccountCreationProcessData?>._, A<Action<TechnicalUser>?>._))
             .Invokes((TechnicalUserCreationInfo _, Guid _, IEnumerable<string> _, TechnicalUserTypeId _, bool _, bool _, ServiceAccountCreationProcessData? _, Action<TechnicalUser>? setOptionalParameter) =>
             {
                 if (technicalUser != null)

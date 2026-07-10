@@ -256,7 +256,7 @@ public class TechnicalUserProfileRepositoryTests : IAssemblyFixture<TestDbFixtur
                 "test"
             })};
         var providerOnlyRoleConfig = new[]{
-            new UserRoleConfig("https://catenax-int-dismantler-s66pftcc.authentication.eu10.hana.ondemand.com", new []
+            new UserRoleConfig("https://arenax-int-dismantler-s66pftcc.authentication.eu10.hana.ondemand.com", new []
             {
                 "EarthCommerce.Advanced.BuyerRC_QAS2"
             })};

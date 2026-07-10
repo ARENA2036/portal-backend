@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework Cors
+# Arena-X Portal Backend Framework Cors
 
-The Catena-X Portal Backend Framework Cors library provides some extensions to setup Cors.
+The Arena-X Portal Backend Framework Cors library provides some extensions to setup Cors.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

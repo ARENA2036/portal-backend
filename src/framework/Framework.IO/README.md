@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework IO
+# Arena-X Portal Backend Framework IO
 
-The Catena-X Portal Backend Framework IO library provides a useful set of extensions and functionality for file I/O handling.
+The Arena-X Portal Backend Framework IO library provides a useful set of extensions and functionality for file I/O handling.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

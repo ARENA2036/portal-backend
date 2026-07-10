@@ -238,15 +238,15 @@ public class ServiceReleaseBusinessLogic : IServiceReleaseBusinessLogic
 
     /// <inheritdoc/>
     public Task SubmitServiceAsync(Guid serviceId) =>
-        _offerService.SubmitServiceAsync(serviceId, OfferTypeId.SERVICE, _settings.SubmitServiceNotificationTypeIds, _settings.CatenaAdminRoles);
+        _offerService.SubmitServiceAsync(serviceId, OfferTypeId.SERVICE, _settings.SubmitServiceNotificationTypeIds, _settings.ArenaAdminRoles);
 
     /// <inheritdoc/>
     public Task ApproveServiceRequestAsync(Guid appId) =>
-        _offerService.ApproveOfferRequestAsync(appId, OfferTypeId.SERVICE, _settings.ApproveServiceNotificationTypeIds, _settings.ApproveServiceUserRoles, _settings.SubmitServiceNotificationTypeIds, _settings.CatenaAdminRoles, (_settings.OfferSubscriptionAddress, _settings.OfferDetailAddress), _settings.ActivationUserRoles);
+        _offerService.ApproveOfferRequestAsync(appId, OfferTypeId.SERVICE, _settings.ApproveServiceNotificationTypeIds, _settings.ApproveServiceUserRoles, _settings.SubmitServiceNotificationTypeIds, _settings.ArenaAdminRoles, (_settings.OfferSubscriptionAddress, _settings.OfferDetailAddress), _settings.ActivationUserRoles);
 
     /// <inheritdoc />
     public Task DeclineServiceRequestAsync(Guid serviceId, OfferDeclineRequest data) =>
-        _offerService.DeclineOfferAsync(serviceId, data, OfferTypeId.SERVICE, NotificationTypeId.SERVICE_RELEASE_REJECTION, _settings.ServiceManagerRoles, _settings.ServiceOverviewAddress, _settings.SubmitServiceNotificationTypeIds, _settings.CatenaAdminRoles);
+        _offerService.DeclineOfferAsync(serviceId, data, OfferTypeId.SERVICE, NotificationTypeId.SERVICE_RELEASE_REJECTION, _settings.ServiceManagerRoles, _settings.ServiceOverviewAddress, _settings.SubmitServiceNotificationTypeIds, _settings.ArenaAdminRoles);
 
     /// <inheritdoc />
     public Task CreateServiceDocumentAsync(Guid serviceId, DocumentTypeId documentTypeId, IFormFile document, CancellationToken cancellationToken) =>

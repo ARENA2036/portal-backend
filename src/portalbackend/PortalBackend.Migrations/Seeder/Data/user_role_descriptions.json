@@ -202,12 +202,12 @@
   {
     "user_role_id": "ec3a3005-b59c-4319-a8eb-3228014cd6e7",
     "language_short_name": "de",
-    "description": "Technischer User für den Zugriff auf Catena-X Mitgliedsinformationen."
+    "description": "Technischer User für den Zugriff auf Arena-X Mitgliedsinformationen."
   },
   {
     "user_role_id": "ec3a3005-b59c-4319-a8eb-3228014cd6e7",
     "language_short_name": "en",
-    "description": "Technical user to access catena-x membership information."
+    "description": "Technical user to access arena-x membership information."
   },
   {
     "user_role_id": "9956fa8d-e454-49ca-a3b1-45e2c106fe59",

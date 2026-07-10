@@ -64,7 +64,7 @@ public class AppReleaseBusinessLogicTest
     private readonly AppUpdateData _appUpdateData;
     private readonly ILanguageRepository _languageRepository;
     private readonly AppsSettings _settings;
-    private const string ClientId = "catenax-portal";
+    private const string ClientId = "arenax-portal";
     private readonly IOfferSetupService _offerSetupService;
     private readonly AppReleaseBusinessLogic _sut;
     private readonly IOfferDocumentService _offerDocumentService;

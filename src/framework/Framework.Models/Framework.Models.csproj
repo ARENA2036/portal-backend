@@ -35,7 +35,7 @@
     <Authors>TractusX</Authors>
     <Copyright>All content is the property of the respective authors or their employers. For more information regarding authorship of content, please consult the listed source code repository logs.</Copyright>
     <Description>
-      The Catena-X Portal Backend Framework library is a versatile .NET library that provides a set of powerful tools and utilities for common development tasks.
+      The Arena-X Portal Backend Framework library is a versatile .NET library that provides a set of powerful tools and utilities for common development tasks.
       This package simplifies various aspects of your application, including database interactions, asynchronous programming, file I/O, LINQ operations, logging, and database seeding.
     </Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>

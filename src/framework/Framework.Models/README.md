@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework Models
+# Arena-X Portal Backend Framework Models
 
-The Catena-X Portal Backend Framework Models library provides some base models.
+The Arena-X Portal Backend Framework Models library provides some base models.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

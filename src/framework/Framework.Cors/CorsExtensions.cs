@@ -28,7 +28,7 @@ namespace Org.Eclipse.TractusX.Portal.Backend.Framework.Cors;
 /// </summary>
 public static class CorsExtensions
 {
-    public const string AllowSpecificOrigins = "_catenaXAllowSpecificOrigins";
+    public const string AllowSpecificOrigins = "_arenaXAllowSpecificOrigins";
 
     /// <summary>
     /// Setup for the cors configuration

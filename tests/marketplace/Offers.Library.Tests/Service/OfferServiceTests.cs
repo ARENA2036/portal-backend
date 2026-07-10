@@ -803,11 +803,11 @@ public class OfferServiceTests
         };
         var approveAppUserRoles = new[]
         {
-            new UserRoleConfig("catenax-portal", new [] { "Sales Manager" })
+            new UserRoleConfig("arenax-portal", new [] { "Sales Manager" })
         };
         var recipients = new[]
         {
-            new UserRoleConfig("catenax-portal", new [] { "Sales Manager", "App Manager" })
+            new UserRoleConfig("arenax-portal", new [] { "Sales Manager", "App Manager" })
         };
         var subscriptionUrl = _fixture.Create<string>();
         var detailUrl = _fixture.Create<string>();
@@ -871,11 +871,11 @@ public class OfferServiceTests
         };
         var approveAppUserRoles = new[]
         {
-            new UserRoleConfig("catenax-portal", new [] { "Sales Manager" })
+            new UserRoleConfig("arenax-portal", new [] { "Sales Manager" })
         };
         var recipients = new[]
         {
-            new UserRoleConfig("catenax-portal", new [] { "Sales Manager", "App Manager" })
+            new UserRoleConfig("arenax-portal", new [] { "Sales Manager", "App Manager" })
         };
         var subscriptionUrl = _fixture.Create<string>();
         var detailUrl = _fixture.Create<string>();
@@ -904,11 +904,11 @@ public class OfferServiceTests
         };
         var approveAppUserRoles = new[]
         {
-            new UserRoleConfig("catenax-portal", new [] { "Sales Manager" })
+            new UserRoleConfig("arenax-portal", new [] { "Sales Manager" })
         };
         var recipients = new[]
         {
-            new UserRoleConfig("catenax-portal", new [] { "Sales Manager", "App Manager" })
+            new UserRoleConfig("arenax-portal", new [] { "Sales Manager", "App Manager" })
         };
         var subscriptionUrl = _fixture.Create<string>();
         var detailUrl = _fixture.Create<string>();

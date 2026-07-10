@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework DependencyInjection
+# Arena-X Portal Backend Framework DependencyInjection
 
-The Catena-X Portal Backend Framework DependencyInjection library provides a useful set of extensions to easily setup automatic dependency injection.
+The Arena-X Portal Backend Framework DependencyInjection library provides a useful set of extensions to easily setup automatic dependency injection.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

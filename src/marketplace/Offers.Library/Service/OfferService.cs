@@ -330,7 +330,7 @@ public class OfferService(
     }
 
     /// <inheritdoc/>
-    public async Task SubmitOfferAsync(Guid offerId, OfferTypeId offerTypeId, IEnumerable<NotificationTypeId> notificationTypeIds, IEnumerable<UserRoleConfig> catenaAdminRoles, IEnumerable<DocumentTypeId> submitAppDocumentTypeIds)
+    public async Task SubmitOfferAsync(Guid offerId, OfferTypeId offerTypeId, IEnumerable<NotificationTypeId> notificationTypeIds, IEnumerable<UserRoleConfig> arenaAdminRoles, IEnumerable<DocumentTypeId> submitAppDocumentTypeIds)
     {
         var offerDetails = await GetOfferReleaseData(offerId, offerTypeId).ConfigureAwait(ConfigureAwaitOptions.None);
 
@@ -348,14 +348,14 @@ public class OfferService(
             throw ConflictException.Create(OfferServiceErrors.PRIVACYPOLICIES_MISSING);
         }
 
-        await SubmitAppServiceAsync(offerId, notificationTypeIds, catenaAdminRoles, offerDetails).ConfigureAwait(ConfigureAwaitOptions.None);
+        await SubmitAppServiceAsync(offerId, notificationTypeIds, arenaAdminRoles, offerDetails).ConfigureAwait(ConfigureAwaitOptions.None);
     }
 
     /// <inheritdoc/>
-    public async Task SubmitServiceAsync(Guid offerId, OfferTypeId offerTypeId, IEnumerable<NotificationTypeId> notificationTypeIds, IEnumerable<UserRoleConfig> catenaAdminRoles)
+    public async Task SubmitServiceAsync(Guid offerId, OfferTypeId offerTypeId, IEnumerable<NotificationTypeId> notificationTypeIds, IEnumerable<UserRoleConfig> arenaAdminRoles)
     {
         var offerDetails = await GetOfferReleaseData(offerId, offerTypeId).ConfigureAwait(ConfigureAwaitOptions.None);
-        await SubmitAppServiceAsync(offerId, notificationTypeIds, catenaAdminRoles, offerDetails).ConfigureAwait(ConfigureAwaitOptions.None);
+        await SubmitAppServiceAsync(offerId, notificationTypeIds, arenaAdminRoles, offerDetails).ConfigureAwait(ConfigureAwaitOptions.None);
     }
 
     private async Task<OfferReleaseData> GetOfferReleaseData(Guid offerId, OfferTypeId offerTypeId)
@@ -369,7 +369,7 @@ public class OfferService(
         return offerDetails;
     }
 
-    private async Task SubmitAppServiceAsync(Guid offerId, IEnumerable<NotificationTypeId> notificationTypeIds, IEnumerable<UserRoleConfig> catenaAdminRoles, OfferReleaseData offerDetails)
+    private async Task SubmitAppServiceAsync(Guid offerId, IEnumerable<NotificationTypeId> notificationTypeIds, IEnumerable<UserRoleConfig> arenaAdminRoles, OfferReleaseData offerDetails)
     {
         GetAndValidateOfferDetails(offerDetails);
         var pendingDocuments = offerDetails.DocumentDatas.Where(data => data.StatusId == DocumentStatusId.PENDING);
@@ -398,7 +398,7 @@ public class OfferService(
 
         var serializeNotificationContent = JsonSerializer.Serialize(notificationContent);
         var content = notificationTypeIds.Select(typeId => new ValueTuple<string?, NotificationTypeId>(serializeNotificationContent, typeId));
-        await notificationService.CreateNotifications(catenaAdminRoles, _identityData.IdentityId, content, false).ConfigureAwait(ConfigureAwaitOptions.None);
+        await notificationService.CreateNotifications(arenaAdminRoles, _identityData.IdentityId, content, false).ConfigureAwait(ConfigureAwaitOptions.None);
         await portalRepositories.SaveAsync().ConfigureAwait(ConfigureAwaitOptions.None);
     }
 
@@ -430,7 +430,7 @@ public class OfferService(
     }
 
     /// <inheritdoc/>
-    public async Task ApproveOfferRequestAsync(Guid offerId, OfferTypeId offerTypeId, IEnumerable<NotificationTypeId> approveOfferNotificationTypeIds, IEnumerable<UserRoleConfig> approveOfferRoles, IEnumerable<NotificationTypeId> submitOfferNotificationTypeIds, IEnumerable<UserRoleConfig> catenaAdminRoles, (string SubscriptionUrl, string DetailUrl) mailParams, IEnumerable<UserRoleConfig> notificationRecipients)
+    public async Task ApproveOfferRequestAsync(Guid offerId, OfferTypeId offerTypeId, IEnumerable<NotificationTypeId> approveOfferNotificationTypeIds, IEnumerable<UserRoleConfig> approveOfferRoles, IEnumerable<NotificationTypeId> submitOfferNotificationTypeIds, IEnumerable<UserRoleConfig> arenaAdminRoles, (string SubscriptionUrl, string DetailUrl) mailParams, IEnumerable<UserRoleConfig> notificationRecipients)
     {
         var offerRepository = portalRepositories.GetInstance<IOfferRepository>();
         var offerDetails = await offerRepository.GetOfferStatusDataByIdAsync(offerId, offerTypeId).ConfigureAwait(ConfigureAwaitOptions.None);
@@ -482,7 +482,7 @@ public class OfferService(
         var serializeNotificationContent = JsonSerializer.Serialize(notificationContent);
         var content = approveOfferNotificationTypeIds.Select(typeId => new ValueTuple<string?, NotificationTypeId>(serializeNotificationContent, typeId));
         await notificationService.CreateNotifications(approveOfferRoles, _identityData.IdentityId, content, offerDetails.ProviderCompanyId.Value).AwaitAll().ConfigureAwait(false);
-        await notificationService.SetNotificationsForOfferToDone(catenaAdminRoles, submitOfferNotificationTypeIds, offerId).ConfigureAwait(ConfigureAwaitOptions.None);
+        await notificationService.SetNotificationsForOfferToDone(arenaAdminRoles, submitOfferNotificationTypeIds, offerId).ConfigureAwait(ConfigureAwaitOptions.None);
 
         await mailingProcessCreation.RoleBaseSendMail(
             notificationRecipients,
@@ -502,7 +502,7 @@ public class OfferService(
     }
 
     /// <inheritdoc />
-    public async Task DeclineOfferAsync(Guid offerId, OfferDeclineRequest data, OfferTypeId offerType, NotificationTypeId notificationTypeId, IEnumerable<UserRoleConfig> notificationRecipients, string basePortalAddress, IEnumerable<NotificationTypeId> submitOfferNotificationTypeIds, IEnumerable<UserRoleConfig> catenaAdminRoles)
+    public async Task DeclineOfferAsync(Guid offerId, OfferDeclineRequest data, OfferTypeId offerType, NotificationTypeId notificationTypeId, IEnumerable<UserRoleConfig> notificationRecipients, string basePortalAddress, IEnumerable<NotificationTypeId> submitOfferNotificationTypeIds, IEnumerable<UserRoleConfig> arenaAdminRoles)
     {
         var offerRepository = portalRepositories.GetInstance<IOfferRepository>();
         var declineData = await offerRepository.GetOfferDeclineDataAsync(offerId, offerType).ConfigureAwait(ConfigureAwaitOptions.None);
@@ -555,7 +555,7 @@ public class OfferService(
         };
 
         await notificationService.CreateNotifications(notificationRecipients, _identityData.IdentityId, content, declineData.CompanyId.Value).AwaitAll().ConfigureAwait(false);
-        await notificationService.SetNotificationsForOfferToDone(catenaAdminRoles, submitOfferNotificationTypeIds, offerId).ConfigureAwait(ConfigureAwaitOptions.None);
+        await notificationService.SetNotificationsForOfferToDone(arenaAdminRoles, submitOfferNotificationTypeIds, offerId).ConfigureAwait(ConfigureAwaitOptions.None);
 
         await mailingProcessCreation.RoleBaseSendMail(
             notificationRecipients,

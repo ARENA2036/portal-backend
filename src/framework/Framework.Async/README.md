@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework Async
+# Arena-X Portal Backend Framework Async
 
-The Catena-X Portal Backend Framework Async library provides a set of useful tools for asynchronous handling.
+The Arena-X Portal Backend Framework Async library provides a set of useful tools for asynchronous handling.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

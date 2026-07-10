@@ -46,7 +46,7 @@ namespace Org.Eclipse.TractusX.Portal.Backend.Administration.Service.Tests.Busin
 
 public class ConnectorsBusinessLogicTests
 {
-    private const string ValidCompanyBpn = "CATENAXBPN123";
+    private const string ValidCompanyBpn = "ARENAXXBPN123";
     private const string CountryCode_de = "de";
     private static readonly Guid CompanyUserId = new("ac1cf001-7fbc-1f2f-817f-bce058020002");
     private static readonly Guid ServiceAccountUserId = new("ac1cf001-7fbc-1f2f-817f-bce058020003");

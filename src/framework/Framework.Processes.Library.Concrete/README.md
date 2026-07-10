@@ -1,6 +1,6 @@
-# Catena-X Portal Backend Framework Processes Library Concrete
+# Arena-X Portal Backend Framework Processes Library Concrete
 
-The Catena-X Portal Backend Framework Processes Library Concrete provides some base models.
+The Arena-X Portal Backend Framework Processes Library Concrete provides some base models.
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 
