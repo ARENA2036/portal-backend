@@ -160,7 +160,7 @@ public class IssuerComponentBusinessLogic(
         var technicalUserDetails = GetTechnicalUserDetails(walletInformation, isBringYourOwnWallet, service.HolderRequestsOwnCredentials);
         var callbackUrl = $"{_settings.CallbackBaseUrl}/api/administration/registration/issuer/membershipcredential";
 
-        var data = new CreateMembershipCredentialRequest(holder, businessPartnerNumber, "catena-x", technicalUserDetails, callbackUrl);
+        var data = new CreateMembershipCredentialRequest(holder, businessPartnerNumber, "arena-x", technicalUserDetails, callbackUrl);
 
         await service.CreateMembershipCredential(data, cancellationToken).ConfigureAwait(false);
         return new IApplicationChecklistService.WorkerChecklistProcessStepExecutionResult(
