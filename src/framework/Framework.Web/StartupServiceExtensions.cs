@@ -71,6 +71,10 @@ public static class StartupServiceExtensions
         }).AddJwtBearer(options =>
         {
             configuration.Bind("JwtBearerOptions", options);
+            // Portal authorization resolves Keycloak's standard OIDC claim
+            // names (for example `sub`) directly. Keep them unchanged instead
+            // of applying the .NET inbound claim-type mapping.
+            options.MapInboundClaims = false;
             if (!options.RequireHttpsMetadata)
             {
                 options.BackchannelHttpHandler = new HttpClientHandler

@@ -149,4 +149,27 @@ public class MandatoryIdentityClaimHandlerTests
             _claimsIdentityDataBuilder.CompanyId.Should().Be(companyId);
         }
     }
+
+    [Fact]
+    public async Task HandleValidCompany_WithNonGuidUserNameAndSub_ResolvesIdentityBySub()
+    {
+        // Arrange - brokered user whose central username is not the portal identity id
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+            new Claim("preferred_username", "jane.doe@shared-idp"),
+            new Claim("sub", _subject_company_user)
+        }));
+        var context = new AuthorizationHandlerContext(Enumerable.Repeat(new MandatoryIdentityClaimRequirement(PolicyTypeId.ValidCompany), 1), principal, null);
+        var sut = new MandatoryIdentityClaimHandler(_claimsIdentityDataBuilder, _portalRepositories, _logger);
+
+        // Act
+        await sut.HandleAsync(context);
+
+        // Assert
+        context.HasSucceeded.Should().BeTrue();
+        _claimsIdentityDataBuilder.Status.Should().Be(IClaimsIdentityDataBuilderStatus.Complete);
+        _claimsIdentityDataBuilder.IdentityId.Should().Be(_companyUserId);
+        _claimsIdentityDataBuilder.CompanyId.Should().Be(_companyUserCompanyId);
+        A.CallTo(() => _identityRepository.GetActiveIdentityDataByUserEntityId(_subject_company_user)).MustHaveHappenedOnceExactly();
+    }
 }
