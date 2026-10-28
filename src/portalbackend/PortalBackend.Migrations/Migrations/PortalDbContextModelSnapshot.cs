@@ -5429,6 +5429,174 @@ namespace Org.Eclipse.TractusX.Portal.Backend.PortalBackend.Migrations.Migration
                     b.ToTable("connector_assigned_offer_subscriptions", "portal");
                 });
 
+            modelBuilder.Entity("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.ConnectorProvisioningBasis", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("label");
+
+                    b.HasKey("Id")
+                        .HasName("pk_connector_provisioning_bases");
+
+                    b.ToTable("connector_provisioning_bases", "portal");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Label = "APPLICATION_CONFIRMED"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Label = "DEV_OPERATOR_APPROVED"
+                        });
+                });
+
+            modelBuilder.Entity("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.ConnectorProvisioningRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("ApplicationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("application_id");
+
+                    b.Property<Guid?>("ApprovedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("approved_by");
+
+                    b.Property<int>("BasisId")
+                        .HasColumnType("integer")
+                        .HasColumnName("basis_id");
+
+                    b.Property<string>("BusinessPartnerNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("business_partner_number");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("company_id");
+
+                    b.Property<Guid?>("ConnectorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("connector_id");
+
+                    b.Property<string>("ConnectorUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("connector_url");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("date_created");
+
+                    b.Property<DateTimeOffset>("DateLastChanged")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("date_last_changed");
+
+                    b.Property<string>("StatusDetail")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("status_detail");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("integer")
+                        .HasColumnName("status_id");
+
+                    b.Property<Guid>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("uuid")
+                        .HasColumnName("version");
+
+                    b.HasKey("Id")
+                        .HasName("pk_connector_provisioning_requests");
+
+                    b.HasIndex("ApplicationId")
+                        .HasDatabaseName("ix_connector_provisioning_requests_application_id");
+
+                    b.HasIndex("BasisId")
+                        .HasDatabaseName("ix_connector_provisioning_requests_basis_id");
+
+                    b.HasIndex("CompanyId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_connector_provisioning_requests_company_id")
+                        .HasFilter("status_id not in (6, 7)");
+
+                    b.HasIndex("ConnectorId")
+                        .HasDatabaseName("ix_connector_provisioning_requests_connector_id");
+
+                    b.HasIndex("StatusId")
+                        .HasDatabaseName("ix_connector_provisioning_requests_status_id");
+
+                    b.ToTable("connector_provisioning_requests", "portal");
+                });
+
+            modelBuilder.Entity("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.ConnectorProvisioningRequestStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("label");
+
+                    b.HasKey("Id")
+                        .HasName("pk_connector_provisioning_request_statuses");
+
+                    b.ToTable("connector_provisioning_request_statuses", "portal");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Label = "REQUESTED"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Label = "ACKNOWLEDGED"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Label = "PROVISIONING"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Label = "READY"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Label = "FAILED"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Label = "REJECTED"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Label = "DELETED"
+                        });
+                });
+
             modelBuilder.Entity("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.ConnectorStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -9058,6 +9226,48 @@ namespace Org.Eclipse.TractusX.Portal.Backend.PortalBackend.Migrations.Migration
                     b.Navigation("OfferSubscription");
                 });
 
+            modelBuilder.Entity("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.ConnectorProvisioningRequest", b =>
+                {
+                    b.HasOne("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.CompanyApplication", "Application")
+                        .WithMany()
+                        .HasForeignKey("ApplicationId")
+                        .IsRequired()
+                        .HasConstraintName("fk_connector_provisioning_requests_company_applications_applic");
+
+                    b.HasOne("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.ConnectorProvisioningBasis", "Basis")
+                        .WithMany("ConnectorProvisioningRequests")
+                        .HasForeignKey("BasisId")
+                        .IsRequired()
+                        .HasConstraintName("fk_connector_provisioning_requests_connector_provisioning_base");
+
+                    b.HasOne("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .IsRequired()
+                        .HasConstraintName("fk_connector_provisioning_requests_companies_company_id");
+
+                    b.HasOne("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.Connector", "Connector")
+                        .WithMany()
+                        .HasForeignKey("ConnectorId")
+                        .HasConstraintName("fk_connector_provisioning_requests_connectors_connector_id");
+
+                    b.HasOne("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.ConnectorProvisioningRequestStatus", "Status")
+                        .WithMany("ConnectorProvisioningRequests")
+                        .HasForeignKey("StatusId")
+                        .IsRequired()
+                        .HasConstraintName("fk_connector_provisioning_requests_connector_provisioning_requ");
+
+                    b.Navigation("Application");
+
+                    b.Navigation("Basis");
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Connector");
+
+                    b.Navigation("Status");
+                });
+
             modelBuilder.Entity("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.Consent", b =>
                 {
                     b.HasOne("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.Agreement", "Agreement")
@@ -10157,6 +10367,16 @@ namespace Org.Eclipse.TractusX.Portal.Backend.PortalBackend.Migrations.Migration
             modelBuilder.Entity("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.Connector", b =>
                 {
                     b.Navigation("ConnectorAssignedOfferSubscriptions");
+                });
+
+            modelBuilder.Entity("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.ConnectorProvisioningBasis", b =>
+                {
+                    b.Navigation("ConnectorProvisioningRequests");
+                });
+
+            modelBuilder.Entity("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.ConnectorProvisioningRequestStatus", b =>
+                {
+                    b.Navigation("ConnectorProvisioningRequests");
                 });
 
             modelBuilder.Entity("Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities.ConnectorStatus", b =>

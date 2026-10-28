@@ -79,6 +79,12 @@ public class ApplicationActivationSettings
     [Required(AllowEmptyStrings = false)]
     public string DataspaceAddress { get; set; } = null!;
 
+    /// <summary>
+    /// BE-293: write a connector provisioning request (outbox row) in the same transaction that confirms the
+    /// application. Off by default; deployments without the Connector Provisioning Controller are unaffected.
+    /// </summary>
+    public bool ConnectorProvisioningEnabled { get; set; }
+
     public static bool Validate(ApplicationActivationSettings settings)
     {
         var startSet = settings.StartTime.HasValue;

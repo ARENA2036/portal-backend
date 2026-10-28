@@ -46,6 +46,7 @@ public class PortalRepositories(PortalDbContext portalDbContext) :
         CreateTypeEntry<ICompanyRolesRepository>(context => new CompanyRolesRepository(context)),
         CreateTypeEntry<IConsentAssignedOfferSubscriptionRepository>(context => new ConsentAssignedOfferSubscriptionRepository(context)),
         CreateTypeEntry<IConnectorsRepository>(context => new ConnectorsRepository(context)),
+        CreateTypeEntry<IConnectorProvisioningRequestRepository>(context => new ConnectorProvisioningRequestRepository(context)),
         CreateTypeEntry<IConsentRepository>(context => new ConsentRepository(context)),
         CreateTypeEntry<ICountryRepository>(context => new CountryRepository(context)),
         CreateTypeEntry<IDocumentRepository>(context => new DocumentRepository(context)),
