@@ -129,6 +129,9 @@ public class PortalDbContext(DbContextOptions<PortalDbContext> options, IAuditHa
     public virtual DbSet<ConnectorAssignedOfferSubscription> ConnectorAssignedOfferSubscriptions { get; set; } = default!;
     public virtual DbSet<ConnectorStatus> ConnectorStatuses { get; set; } = default!;
     public virtual DbSet<ConnectorType> ConnectorTypes { get; set; } = default!;
+    public virtual DbSet<ConnectorProvisioningRequest> ConnectorProvisioningRequests { get; set; } = default!;
+    public virtual DbSet<ConnectorProvisioningRequestStatus> ConnectorProvisioningRequestStatuses { get; set; } = default!;
+    public virtual DbSet<ConnectorProvisioningBasis> ConnectorProvisioningBases { get; set; } = default!;
     public virtual DbSet<Consent> Consents { get; set; } = default!;
     public virtual DbSet<ConsentAssignedOffer> ConsentAssignedOffers { get; set; } = default!;
     public virtual DbSet<ConsentAssignedOfferSubscription> ConsentAssignedOfferSubscriptions { get; set; } = default!;
@@ -1133,6 +1136,56 @@ public class PortalDbContext(DbContextOptions<PortalDbContext> options, IAuditHa
                 Enum.GetValues(typeof(ConnectorTypeId))
                     .Cast<ConnectorTypeId>()
                     .Select(e => new ConnectorType(e))
+            );
+
+        // BE-293 automatic connector provisioning outbox
+        modelBuilder.Entity<ConnectorProvisioningRequest>(entity =>
+        {
+            entity.HasOne(d => d.Company)
+                .WithMany()
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.Application)
+                .WithMany()
+                .HasForeignKey(d => d.ApplicationId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.Connector)
+                .WithMany()
+                .HasForeignKey(d => d.ConnectorId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.Status)
+                .WithMany(p => p.ConnectorProvisioningRequests)
+                .HasForeignKey(d => d.StatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.Basis)
+                .WithMany(p => p.ConnectorProvisioningRequests)
+                .HasForeignKey(d => d.BasisId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            // At most one live request per company: REJECTED (6) and DELETED (7) rows do not count.
+            entity.HasIndex(d => d.CompanyId)
+                .IsUnique()
+                .HasFilter("status_id not in (6, 7)");
+
+            entity.HasIndex(d => d.StatusId);
+        });
+
+        modelBuilder.Entity<ConnectorProvisioningRequestStatus>()
+            .HasData(
+                Enum.GetValues(typeof(ConnectorProvisioningRequestStatusId))
+                    .Cast<ConnectorProvisioningRequestStatusId>()
+                    .Select(e => new ConnectorProvisioningRequestStatus(e))
+            );
+
+        modelBuilder.Entity<ConnectorProvisioningBasis>()
+            .HasData(
+                Enum.GetValues(typeof(ConnectorProvisioningBasisId))
+                    .Cast<ConnectorProvisioningBasisId>()
+                    .Select(e => new ConnectorProvisioningBasis(e))
             );
 
         modelBuilder.Entity<Language>(entity =>

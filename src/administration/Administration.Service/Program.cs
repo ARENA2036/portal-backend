@@ -92,6 +92,9 @@ await WebAppHelper
         builder.Services.AddTransient<IConnectorsBusinessLogic, ConnectorsBusinessLogic>()
             .ConfigureConnectorsSettings(builder.Configuration.GetSection("Connectors"));
 
+        builder.Services.AddTransient<IConnectorProvisioningBusinessLogic, ConnectorProvisioningBusinessLogic>()
+            .ConfigureConnectorProvisioningSettings(builder.Configuration.GetSection("ConnectorProvisioning"));
+
         builder.Services.AddMailingProcessCreation(builder.Configuration.GetSection("MailingProcessCreation"));
 
         builder.Services
@@ -106,6 +109,7 @@ await WebAppHelper
             .AddSingleton<IErrorMessageService, ErrorMessageService>()
             .AddSingleton<IErrorMessageContainer, AdministrationCompanyDataErrorMessageContainer>()
             .AddSingleton<IErrorMessageContainer, AdministrationConnectorErrorMessageContainer>()
+            .AddSingleton<IErrorMessageContainer, AdministrationConnectorProvisioningErrorMessageContainer>()
             .AddSingleton<IErrorMessageContainer, AdministrationDocumentErrorMessageContainer>()
             .AddSingleton<IErrorMessageContainer, AdministrationIdentityProviderErrorMessageContainer>()
             .AddSingleton<IErrorMessageContainer, AdministrationNetworkErrorMessageContainer>()

@@ -693,6 +693,132 @@ paths:
           description: Internal Server Error
         '401':
           description: The User is unauthorized
+  /api/administration/connector-provisioning/requests:
+    get:
+      tags:
+        - ConnectorProvisioning
+      summary: 'Provisioning requests in the given status (the controller pulls REQUESTED). (Authorization required - Roles: connector_provisioner)'
+      description: 'Example: GET /api/administration/connector-provisioning/requests?status=REQUESTED'
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/ConnectorProvisioningRequestStatusId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConnectorProvisioningRequestResponse'
+        '500':
+          description: Internal Server Error
+        '401':
+          description: The User is unauthorized
+  '/api/administration/connector-provisioning/requests/{requestId}/status':
+    put:
+      tags:
+        - ConnectorProvisioning
+      summary: 'Lifecycle status reported by the controller; READY registers the connector. (Authorization required - Roles: connector_provisioner)'
+      description: "Example: PUT /api/administration/connector-provisioning/requests/{requestId}/status\n\nREADY and DELETED write the audited connectors row (last editor), so the caller must resolve to a Portal\nidentity: the controller's client is registered as a technical user (client_id claim)."
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorProvisioningStatusUpdate'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorProvisioningStatusUpdate'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ConnectorProvisioningStatusUpdate'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+        '401':
+          description: The User is unauthorized
+  /api/administration/connector-provisioning/requests/dev:
+    post:
+      tags:
+        - ConnectorProvisioning
+      summary: "DEV only (disabled unless ConnectorProvisioning:DevOperatorRequestsEnabled): an operator approves\nprovisioning for an application that is still in review. The approver is the authenticated operator. (Authorization required - Roles: approve_new_partner)"
+      description: 'Example: POST /api/administration/connector-provisioning/requests/dev'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorProvisioningDevRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorProvisioningDevRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ConnectorProvisioningDevRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+        '401':
+          description: The User is unauthorized
   /api/administration/Connectors:
     get:
       tags:
@@ -7149,6 +7275,62 @@ components:
           items:
             $ref: '#/components/schemas/ConnectorMissingSdDocumentData'
       additionalProperties: false
+    ConnectorProvisioningDevRequest:
+      type: object
+      properties:
+        applicationId:
+          type: string
+          format: uuid
+      additionalProperties: false
+      description: DEV-only operator approval of an application that is still in review.
+    ConnectorProvisioningRequestResponse:
+      type: object
+      properties:
+        requestId:
+          type: string
+          format: uuid
+        companyId:
+          type: string
+          format: uuid
+        applicationId:
+          type: string
+          format: uuid
+        bpn:
+          type: string
+        basis:
+          type: string
+        applicationStatus:
+          type: string
+        companyStatus:
+          type: string
+        approvedBy:
+          type: string
+          nullable: true
+      additionalProperties: false
+      description: 'Request row as pulled by the Connector Provisioning Controller (contract: connector-provisioner/adapters/portal_http.py).'
+    ConnectorProvisioningRequestStatusId:
+      enum:
+        - REQUESTED
+        - ACKNOWLEDGED
+        - PROVISIONING
+        - READY
+        - FAILED
+        - REJECTED
+        - DELETED
+      type: string
+    ConnectorProvisioningStatusUpdate:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ConnectorProvisioningRequestStatusId'
+        detail:
+          type: string
+          nullable: true
+        connectorUrl:
+          type: string
+          nullable: true
+      additionalProperties: false
+      description: Status report from the controller.
     ConnectorResponseData:
       type: object
       properties:
