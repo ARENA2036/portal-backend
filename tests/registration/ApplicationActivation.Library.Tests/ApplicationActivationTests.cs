@@ -80,6 +80,7 @@ public class ApplicationActivationTests
     private readonly ICompanyRepository _companyRepository;
     private readonly IUserRolesRepository _rolesRepository;
     private readonly IPortalProcessStepRepository _processStepRepository;
+    private readonly IConnectorProvisioningRequestRepository _connectorProvisioningRequestRepository;
     private readonly IMailingProcessCreation _mailingProcessCreation;
     private readonly List<Notification> _notifications = new();
     private readonly List<Guid> _notifiedUserIds = new();
@@ -132,6 +133,8 @@ public class ApplicationActivationTests
         A.CallTo(() => portalRepositories.GetInstance<ICompanyRepository>()).Returns(_companyRepository);
         A.CallTo(() => portalRepositories.GetInstance<IPortalProcessStepRepository>()).Returns(_processStepRepository);
         A.CallTo(() => portalRepositories.GetInstance<IProcessStepRepository<ProcessTypeId, ProcessStepTypeId>>()).Returns(_processStepRepository);
+        _connectorProvisioningRequestRepository = A.Fake<IConnectorProvisioningRequestRepository>();
+        A.CallTo(() => portalRepositories.GetInstance<IConnectorProvisioningRequestRepository>()).Returns(_connectorProvisioningRequestRepository);
         A.CallTo(() => options.Value).Returns(_settings);
         _walletProviderResolver = A.Fake<IWalletProviderResolver>();
 
@@ -712,6 +715,59 @@ public class ApplicationActivationTests
         result.ScheduleStepTypeIds.Should().BeNull();
         result.SkipStepTypeIds.Should().BeNull();
         result.Modified.Should().BeTrue();
+    }
+
+    private Guid ArrangeActivationForConnectorProvisioning(bool enabled, bool liveRequestExists)
+    {
+        var companyId = Guid.NewGuid();
+        _settings.ConnectorProvisioningEnabled = enabled;
+        A.CallTo(() => _applicationRepository.GetCompanyAndApplicationDetailsForApprovalAsync(Id))
+            .Returns((companyId, "Company 0004", "BPNL0000000000ZZ", CompanyApplicationTypeId.INTERNAL, null));
+        A.CallTo(() => _applicationRepository.GetEmailDataUntrackedAsync(Id))
+            .Returns(Enumerable.Empty<EmailData>().ToAsyncEnumerable());
+        A.CallTo(() => _connectorProvisioningRequestRepository.HasLiveRequest(companyId)).Returns(liveRequestExists);
+        SetupNotifications();
+        return companyId;
+    }
+
+    [Fact]
+    public async Task SaveApplicationActivationToDatabase_WithConnectorProvisioningEnabled_WritesOutboxRowInTheSameUnitOfWork()
+    {
+        var companyId = ArrangeActivationForConnectorProvisioning(enabled: true, liveRequestExists: false);
+        var now = DateTimeOffset.UtcNow;
+        A.CallTo(() => _dateTimeProvider.OffsetNow).Returns(now);
+        var context = new IApplicationChecklistService.WorkerChecklistProcessStepData(Id, default, Checklist, Enumerable.Empty<ProcessStepTypeId>());
+
+        await _sut.SaveApplicationActivationToDatabase(context, CancellationToken.None);
+
+        A.CallTo(() => _connectorProvisioningRequestRepository.CreateRequest(companyId, Id, "BPNL0000000000ZZ",
+                ConnectorProvisioningBasisId.APPLICATION_CONFIRMED, null, now))
+            .MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public async Task SaveApplicationActivationToDatabase_WithConnectorProvisioningDisabled_WritesNoOutboxRow()
+    {
+        ArrangeActivationForConnectorProvisioning(enabled: false, liveRequestExists: false);
+        var context = new IApplicationChecklistService.WorkerChecklistProcessStepData(Id, default, Checklist, Enumerable.Empty<ProcessStepTypeId>());
+
+        await _sut.SaveApplicationActivationToDatabase(context, CancellationToken.None);
+
+        A.CallTo(() => _connectorProvisioningRequestRepository.HasLiveRequest(A<Guid>._)).MustNotHaveHappened();
+        A.CallTo(() => _connectorProvisioningRequestRepository.CreateRequest(A<Guid>._, A<Guid>._, A<string>._, A<ConnectorProvisioningBasisId>._, A<Guid?>._, A<DateTimeOffset>._))
+            .MustNotHaveHappened();
+    }
+
+    [Fact]
+    public async Task SaveApplicationActivationToDatabase_WithLiveRequest_DoesNotCreateASecondOne()
+    {
+        ArrangeActivationForConnectorProvisioning(enabled: true, liveRequestExists: true);
+        var context = new IApplicationChecklistService.WorkerChecklistProcessStepData(Id, default, Checklist, Enumerable.Empty<ProcessStepTypeId>());
+
+        await _sut.SaveApplicationActivationToDatabase(context, CancellationToken.None);
+
+        A.CallTo(() => _connectorProvisioningRequestRepository.CreateRequest(A<Guid>._, A<Guid>._, A<string>._, A<ConnectorProvisioningBasisId>._, A<Guid?>._, A<DateTimeOffset>._))
+            .MustNotHaveHappened();
     }
 
     [Fact]

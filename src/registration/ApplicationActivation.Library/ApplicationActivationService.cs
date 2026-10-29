@@ -351,6 +351,18 @@ public class ApplicationActivationService(
             c.CompanyStatusId = CompanyStatusId.ACTIVE;
         });
 
+        if (_settings.ConnectorProvisioningEnabled)
+        {
+            // BE-293 transactional outbox: saved together with CONFIRMED/ACTIVE above, so a request exists exactly
+            // when the activation is committed. A company with a live request (e.g. DEV operator approved) gets none.
+            var provisioningRepository = portalRepositories.GetInstance<IConnectorProvisioningRequestRepository>();
+            if (!await provisioningRepository.HasLiveRequest(companyId).ConfigureAwait(ConfigureAwaitOptions.None))
+            {
+                provisioningRepository.CreateRequest(companyId, context.ApplicationId, businessPartnerNumber,
+                    ConnectorProvisioningBasisId.APPLICATION_CONFIRMED, null, dateTime.OffsetNow);
+            }
+        }
+
         if (applicationTypeId == CompanyApplicationTypeId.EXTERNAL)
         {
             if (networkRegistrationProcessData == null)
