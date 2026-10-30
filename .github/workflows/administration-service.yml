@@ -102,7 +102,7 @@ jobs:
           platforms: linux/amd64, linux/arm64
           pull: true
           # push: ${{ github.event_name != 'pull_request' }}
-          puch: true
+          push: true
           tags: ${{ steps.meta.outputs.tags }}, ${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
 
