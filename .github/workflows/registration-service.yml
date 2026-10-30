@@ -38,7 +38,7 @@ on:
 
     branches:
       - 'main'
-      - 'feat/DE-293-portal-integration'
+      - 'feat/BE-293-portal-integration'
   workflow_dispatch:
     inputs:
       image_tag:
