@@ -39,11 +39,21 @@ on:
 
     branches:
       - 'main'
+      - 'feat/DE-293-portal-integration'
   workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'tag'
+        required: true
+        default: 'latest'
+
 
 env:
-  IMAGE_NAMESPACE: "arena2036.azurecr.io"
+  IMAGE_NAMESPACE: "harbor-hub-shared.arena.3ascloud.de/tractusx"
   IMAGE_NAME: "portal-administration-service"
+  SERVER_URL: '${{ github.server_url }}'
+  REPOSITORY: '${{ github.repository }}'
+  REF_NAME: '${{ github.ref_name }}'
 
 jobs:
   build-and-push-image:
@@ -62,12 +72,12 @@ jobs:
       #     username: ${{ secrets.DOCKER_HUB_USER }}
       #     password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      - name: Login to DockerHub
+      - name: Docker Login
         uses: azure/docker-login@v1
         with:
-          login-server: ${{ secrets.AZURE_URL }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          login-server: ${{ secrets.HBR_REGISTRY }}
+          username: ${{ secrets.HBR_USERNAME }}
+          password: ${{ secrets.HBR_PASSWORD }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
@@ -81,7 +91,7 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=latest
+            type=raw,value=${{ github.event.inputs.image_tag }}
             type=raw,value=${{ github.sha }}
 
       - name: Build and push Docker image
@@ -91,8 +101,9 @@ jobs:
           file: ./docker/Dockerfile-administration-service
           platforms: linux/amd64, linux/arm64
           pull: true
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          # push: ${{ github.event_name != 'pull_request' }}
+          puch: true
+          tags: ${{ steps.meta.outputs.tags }}, ${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
 
       # https://github.com/peter-evans/dockerhub-description
