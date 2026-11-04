@@ -28,6 +28,7 @@ COPY src/externalsystems/Custodian.Library/ src/externalsystems/Custodian.Librar
 COPY src/framework/ src/framework/
 COPY src/processes/Processes.ProcessIdentity/ src/processes/Processes.ProcessIdentity/
 COPY src/processes/ApplicationChecklist.Library/ src/processes/ApplicationChecklist.Library/
+COPY src/onboarding/Onboarding.WalletProvider/ src/onboarding/Onboarding.WalletProvider/
 RUN dotnet restore "src/maintenance/Maintenance.App/Maintenance.App.csproj"
 WORKDIR /src/maintenance/Maintenance.App
 RUN dotnet publish "Maintenance.App.csproj" -c Release -o /app/publish

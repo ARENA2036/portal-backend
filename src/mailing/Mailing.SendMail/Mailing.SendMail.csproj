@@ -30,6 +30,8 @@
   <ItemGroup>
     <PackageReference Include="MailKit" Version="4.13.0" />
     <PackageReference Include="MimeKit" Version="4.13.0" />
+    <!-- CVE-2026-84008: pin the transitive MimeKit dependency to the fixed release -->
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
