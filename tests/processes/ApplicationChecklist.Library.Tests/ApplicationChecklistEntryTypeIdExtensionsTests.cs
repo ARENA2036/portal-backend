@@ -58,4 +58,22 @@ public class ApplicationChecklistEntryTypeIdExtensionsTests
 
         unmapped.Should().BeEmpty();
     }
+
+    /// <summary>
+    /// VALIDATE_DID_DOCUMENT only runs while IDENTITY_WALLET is IN_PROGRESS (the state the wallet
+    /// creation step leaves it in). Resetting the entry to TO_DO made the retriggered step fail
+    /// immediately, without scheduling another retrigger. The retrigger must resume the existing wallet,
+    /// never recreate it.
+    /// </summary>
+    [Fact]
+    public void RetriggerValidateDidDocument_ResumesTheExistingWalletInProgress()
+    {
+        ApplicationChecklistEntryTypeId.IDENTITY_WALLET.GetManualTriggerProcessStepIds()
+            .Should().Contain(ProcessStepTypeId.RETRIGGER_VALIDATE_DID_DOCUMENT);
+
+        var (nextStep, status) = ProcessStepTypeId.RETRIGGER_VALIDATE_DID_DOCUMENT.GetNextProcessStepDataForManualTriggerProcessStepId();
+
+        nextStep.Should().Be(ProcessStepTypeId.VALIDATE_DID_DOCUMENT);
+        status.Should().Be(ApplicationChecklistEntryStatusId.IN_PROGRESS);
+    }
 }

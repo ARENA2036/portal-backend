@@ -166,6 +166,45 @@ public class DidDocumentValidationBusinessLogicTests
         result.ScheduleStepTypeIds.Should().ContainSingle().Which.Should().Be(ProcessStepTypeId.TRANSMIT_BPN_DID);
     }
 
+    /// <summary>
+    /// Regression for the FAILED -> retrigger -> DONE path of an IdentityHub wallet (BE-293 Alpha):
+    /// a resolver answering with an HTTP error (403 rate limit) fails the step with a manual
+    /// RETRIGGER_VALIDATE_DID_DOCUMENT; the retrigger puts IDENTITY_WALLET into the status from the
+    /// manual-trigger map; the retriggered step must then validate the existing DID and hand over to
+    /// TRANSMIT_BPN_DID - and must not create the wallet again.
+    /// </summary>
+    [Fact]
+    public async Task ValidateDidDocument_FailedThenRetriggered_ValidatesTheExistingWalletAndContinues()
+    {
+        const string did = "did:web:identity-hub-01.test.tractus-x.com:BPNL000000000342";
+        var now = DateTimeOffset.UtcNow;
+        A.CallTo(() => _dateTimeProvider.OffsetNow).Returns(now);
+        A.CallTo(() => _applicationRepository.GetDidApplicationId(ApplicationId))
+            .Returns((true, did, Enumerable.Repeat(now, 1)));
+
+        // 1. First run: the resolver answers 403; the step error handler fails it for a manual retrigger.
+        var rateLimited = new ServiceException("call to external system validate-did failed with statuscode 403", System.Net.HttpStatusCode.Forbidden);
+        A.CallTo(() => _resolver.ValidateDid(did, A<CancellationToken>._)).Throws(rateLimited);
+        var thrown = await Assert.ThrowsAsync<ServiceException>(() => _sut.ValidateDidDocument(ContextWith(ApplicationChecklistEntryStatusId.IN_PROGRESS), CancellationToken.None));
+        var failed = await new ApplicationChecklistService(A.Fake<IPortalRepositories>())
+            .HandleServiceErrorAsync(thrown, ProcessStepTypeId.RETRIGGER_VALIDATE_DID_DOCUMENT);
+        failed.StepStatusId.Should().Be(ProcessStepStatusId.FAILED);
+        failed.ScheduleStepTypeIds.Should().ContainSingle().Which.Should().Be(ProcessStepTypeId.RETRIGGER_VALIDATE_DID_DOCUMENT);
+
+        // 2. Manual retrigger: the checklist entry status the administration service writes.
+        var (nextStep, entryStatus) = ProcessStepTypeId.RETRIGGER_VALIDATE_DID_DOCUMENT.GetNextProcessStepDataForManualTriggerProcessStepId();
+        nextStep.Should().Be(ProcessStepTypeId.VALIDATE_DID_DOCUMENT);
+
+        // 3. Retriggered run against a working resolver.
+        A.CallTo(() => _resolver.ValidateDid(did, A<CancellationToken>._)).Returns(true);
+        var result = await _sut.ValidateDidDocument(ContextWith(entryStatus), CancellationToken.None);
+
+        result.StepStatusId.Should().Be(ProcessStepStatusId.DONE);
+        result.ScheduleStepTypeIds.Should().ContainSingle().Which.Should().Be(ProcessStepTypeId.TRANSMIT_BPN_DID);
+        result.ScheduleStepTypeIds.Should().NotContain(new[] { ProcessStepTypeId.CREATE_IDENTITY_HUB_WALLET, ProcessStepTypeId.CREATE_DIM_WALLET, ProcessStepTypeId.CREATE_IDENTITY_WALLET });
+        A.CallTo(() => _resolver.ValidateDid(did, A<CancellationToken>._)).MustHaveHappenedTwiceExactly();
+    }
+
     [Theory]
     [InlineData(WalletProviderId.Dim)]
     [InlineData(WalletProviderId.Custodian)]
