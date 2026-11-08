@@ -17,10 +17,16 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Org.Eclipse.TractusX.Portal.Backend.Framework.DateTimeProvider;
 using Org.Eclipse.TractusX.Portal.Backend.Framework.ErrorHandling;
 using Org.Eclipse.TractusX.Portal.Backend.Framework.Processes.Library.Enums;
 using Org.Eclipse.TractusX.Portal.Backend.Framework.Tests.Shared;
+using Org.Eclipse.TractusX.Portal.Backend.IdentityHub.Library;
+using Org.Eclipse.TractusX.Portal.Backend.IdentityHub.Library.BusinessLogic;
 using Org.Eclipse.TractusX.Portal.Backend.PortalBackend.DBAccess;
+using Org.Eclipse.TractusX.Portal.Backend.PortalBackend.DBAccess.Models;
 using Org.Eclipse.TractusX.Portal.Backend.PortalBackend.DBAccess.Repositories;
 using Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities;
 using Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Enums;
@@ -345,6 +351,63 @@ public class ApplicationChecklistProcessTypeExecutorTests
         checklistEntry!.ApplicationId.Should().Be(applicationId);
         checklistEntry.ApplicationChecklistEntryTypeId.Should().Be(ApplicationChecklistEntryTypeId.BUSINESS_PARTNER_NUMBER);
         checklistEntry.ApplicationChecklistEntryStatusId.Should().Be(ApplicationChecklistEntryStatusId.IN_PROGRESS);
+    }
+
+    [Theory]
+    [InlineData(ProcessStepTypeId.AWAIT_BPN_CREDENTIAL_RESPONSE, ApplicationChecklistEntryTypeId.BPNL_CREDENTIAL, ProcessStepTypeId.RETRIGGER_REQUEST_BPN_CREDENTIAL)]
+    [InlineData(ProcessStepTypeId.AWAIT_MEMBERSHIP_CREDENTIAL_RESPONSE, ApplicationChecklistEntryTypeId.MEMBERSHIP_CREDENTIAL, ProcessStepTypeId.RETRIGGER_REQUEST_MEMBERSHIP_CREDENTIAL)]
+    public async Task ExecuteProcessStep_IdentityHubCredentialFailure_PersistsTheFailedChecklistEntry(ProcessStepTypeId awaitStepTypeId, ApplicationChecklistEntryTypeId entryTypeId, ProcessStepTypeId retriggerStepTypeId)
+    {
+        // BE-293: the await step result must reach the checklist repository, so the step FAILED, the entry
+        // FAILED and the scheduled retrigger step are saved together in the worker's one SaveAsync per step.
+        var processId = Guid.NewGuid();
+        var applicationId = Guid.NewGuid();
+        var applicationRepository = A.Fake<IApplicationRepository>();
+        var identityHubService = A.Fake<IIdentityHubService>();
+        A.CallTo(() => _portalRepositories.GetInstance<IApplicationRepository>()).Returns(applicationRepository);
+        A.CallTo(() => applicationRepository.GetBpnlCredentialIformationByApplicationId(applicationId))
+            .Returns((true, "did:web:holder", "BPNL000000000001", (WalletInformation?)null));
+        A.CallTo(() => identityHubService.GetCredentialRequestStateAsync(A<string>._, A<string>._, A<CancellationToken>._))
+            .Returns(HolderCredentialRequestState.Failed);
+        var awaitLogic = new IdentityHubCredentialAwaitBusinessLogic(
+            _portalRepositories,
+            identityHubService,
+            A.Fake<IDateTimeProvider>(),
+            Options.Create(new IdentityHubSettings { MaxCredentialWaitTimeInDays = 1, BpnCredentialType = "BpnCredential", MembershipCredentialType = "MembershipCredential" }),
+            A.Fake<ILogger<IdentityHubCredentialAwaitBusinessLogic>>());
+        var execution = new IApplicationChecklistHandlerService.ProcessStepExecution(
+            entryTypeId,
+            false,
+            awaitStepTypeId == ProcessStepTypeId.AWAIT_BPN_CREDENTIAL_RESPONSE ? awaitLogic.AwaitBpnCredentialResponse : awaitLogic.AwaitMembershipCredentialResponse,
+            null);
+        A.CallTo(() => _checklistHandlerService.GetProcessStepExecution(awaitStepTypeId)).Returns(execution);
+
+        var checklist = Enum.GetValues<ApplicationChecklistEntryTypeId>()
+            .Select(typeId => (typeId, typeId == entryTypeId ? ApplicationChecklistEntryStatusId.IN_PROGRESS : ApplicationChecklistEntryStatusId.DONE))
+            .ToImmutableArray();
+        A.CallTo(() => _checklistRepository.GetChecklistData(processId))
+            .Returns((true, applicationId, CompanyApplicationStatusId.SUBMITTED, checklist));
+        ApplicationChecklistEntry? checklistEntry = null;
+        A.CallTo(() => _checklistRepository.AttachAndModifyApplicationChecklist(applicationId, entryTypeId, A<Action<ApplicationChecklistEntry>>._, A<Action<ApplicationChecklistEntry>>._))
+            .ReturnsLazily((Guid id, ApplicationChecklistEntryTypeId typeId, Action<ApplicationChecklistEntry> _, Action<ApplicationChecklistEntry> setFields) =>
+            {
+                checklistEntry = new ApplicationChecklistEntry(id, typeId, default, default);
+                setFields(checklistEntry);
+                return checklistEntry;
+            });
+
+        await _executor.InitializeProcess(processId, [awaitStepTypeId]);
+        var result = await _executor.ExecuteProcessStep(awaitStepTypeId, [awaitStepTypeId], CancellationToken.None);
+
+        result.ProcessStepStatusId.Should().Be(ProcessStepStatusId.FAILED);
+        result.Modified.Should().BeTrue();
+        result.ScheduleStepTypeIds.Should().ContainSingle().Which.Should().Be(retriggerStepTypeId);
+        result.ProcessMessage.Should().Contain("reported").And.Contain("failed");
+        A.CallTo(() => _checklistRepository.AttachAndModifyApplicationChecklist(applicationId, entryTypeId, A<Action<ApplicationChecklistEntry>>._, A<Action<ApplicationChecklistEntry>>._))
+            .MustHaveHappenedOnceExactly();
+        checklistEntry.Should().NotBeNull();
+        checklistEntry!.ApplicationChecklistEntryStatusId.Should().Be(ApplicationChecklistEntryStatusId.FAILED);
+        checklistEntry.Comment.Should().Be(result.ProcessMessage);
     }
 
     [Fact]

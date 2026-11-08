@@ -81,13 +81,7 @@ public class IdentityHubCredentialAwaitBusinessLogic(
                     credential,
                     context.ApplicationId,
                     configuredCredentialType);
-                return new IApplicationChecklistService.WorkerChecklistProcessStepExecutionResult(
-                    ProcessStepStatusId.FAILED,
-                    null,
-                    Enumerable.Repeat(retriggerStepTypeId, 1),
-                    null,
-                    false,
-                    $"The IdentityHub reported the {credential} credential request as failed");
+                return Fail(retriggerStepTypeId, $"The IdentityHub reported the {credential} credential request as failed");
         }
 
         var dateCreated = await GetWaitingSince(context.ApplicationId, awaitStepTypeId).ConfigureAwait(ConfigureAwaitOptions.None);
@@ -116,14 +110,27 @@ public class IdentityHubCredentialAwaitBusinessLogic(
             _settings.MaxCredentialWaitTimeInDays,
             configuredCredentialType);
 
-        return new IApplicationChecklistService.WorkerChecklistProcessStepExecutionResult(
+        return Fail(retriggerStepTypeId, $"No {credential} credential was issued within {_settings.MaxCredentialWaitTimeInDays} day(s)");
+    }
+
+    /// <summary>
+    /// Fails the await step and moves the checklist entry to FAILED, mirroring
+    /// <see cref="IApplicationChecklistService.HandleServiceErrorAsync"/>. The manual retrigger only accepts an entry
+    /// in FAILED, so leaving it IN_PROGRESS would schedule a retrigger step that can never be triggered.
+    /// The message names only the credential and the configured wait, never holder or issuer data.
+    /// </summary>
+    private static IApplicationChecklistService.WorkerChecklistProcessStepExecutionResult Fail(ProcessStepTypeId retriggerStepTypeId, string message) =>
+        new(
             ProcessStepStatusId.FAILED,
-            null,
+            entry =>
+            {
+                entry.ApplicationChecklistEntryStatusId = ApplicationChecklistEntryStatusId.FAILED;
+                entry.Comment = message;
+            },
             Enumerable.Repeat(retriggerStepTypeId, 1),
             null,
-            false,
-            $"No {credential} credential was issued within {_settings.MaxCredentialWaitTimeInDays} day(s)");
-    }
+            true,
+            message);
 
     private async Task<string> GetBusinessPartnerNumber(Guid applicationId)
     {

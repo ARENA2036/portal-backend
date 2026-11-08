@@ -28,7 +28,9 @@ namespace Org.Eclipse.TractusX.Portal.Backend.IdentityHub.Library.BusinessLogic;
 /// issuer callback endpoints, not by the worker, so without a handler they sit in TODO indefinitely. For
 /// the DIM issuer that is acceptable — it posts the callback itself. These handlers give that wait a
 /// deadline for the IdentityHub provider, after which the step fails and offers the existing
-/// RETRIGGER_REQUEST_*_CREDENTIAL recovery.
+/// RETRIGGER_REQUEST_*_CREDENTIAL recovery. On failure (holder ERROR or deadline) the corresponding
+/// checklist entry (BPNL_CREDENTIAL or MEMBERSHIP_CREDENTIAL) is set to FAILED with a comment, because the
+/// manual retrigger only accepts an entry in FAILED.
 /// </para>
 /// <para>
 /// The deadline and the holder's own ERROR callback cover <b>disjoint</b> failure domains, confirmed
