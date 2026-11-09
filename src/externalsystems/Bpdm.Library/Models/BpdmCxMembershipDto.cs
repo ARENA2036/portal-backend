@@ -32,8 +32,9 @@ public record BpdmCxMembership(
 /// Modal to send single data to BPDM.
 /// </summary>
 /// <param name="Bpn">Business Partner Number</param>
-/// <param name="IsArenaXMember">True, if BPN has added for Arena-X mambership</param>
+/// <param name="IsCatenaXMember">True, if the BPN is a member. Serialized as "isCatenaXMember", the field name of
+/// BPDM Pool v6 PUT /cx-memberships (CxMembershipDtoV6, BPDM 7.5.0, verified against the live API).</param>
 public record BpdmCxMembershipDto(
     [property: JsonPropertyName("bpnL")] string Bpn,
-    [property: JsonPropertyName("isArenaXMember")] bool IsArenaXMember
+    [property: JsonPropertyName("isCatenaXMember")] bool IsCatenaXMember
 );

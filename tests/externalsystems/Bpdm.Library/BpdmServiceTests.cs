@@ -700,8 +700,12 @@ public class BpdmServiceTests
             .Which.Memberships.Should().ContainSingle()
             .Which.Should().Match<BpdmCxMembershipDto>(x =>
                 x.Bpn == bpn &&
-                x.IsArenaXMember
+                x.IsCatenaXMember
         );
+        // The wire format must match BPDM Pool v6 CxMembershipUpdateRequestV6 exactly.
+        var body = await httpMessageHandlerMock.RequestMessage.Content!.ReadAsStringAsync();
+        body.Should().Be("{\"memberships\":[{\"bpnL\":\"123\",\"isCatenaXMember\":true}]}");
+        body.Should().NotContain("isArenaXMember");
         // Assert
         result.Should().BeTrue();
         A.CallTo(() => _tokenService.GetAuthorizedClient("BpdmServicePool", _options.Value, A<CancellationToken>._))
