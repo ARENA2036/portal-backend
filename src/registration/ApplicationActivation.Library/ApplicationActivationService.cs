@@ -267,9 +267,9 @@ public class ApplicationActivationService(
             await provisioningManager.UpdateSharedRealmTheme(alias, _settings.LoginTheme).ConfigureAwait(false);
         }
 
-        // Dim manages membership in BPDM (SET_CX_MEMBERSHIP_IN_BPDM); Custodian and IdentityHub
-        // use the direct SET_MEMBERSHIP step. (IdentityHub membership is issued as a VC via the
-        // IssuerService in the credential steps; revisit if IdentityHub needs BPDM-side membership.)
+        // Dim manages membership in BPDM (SET_CX_MEMBERSHIP_IN_BPDM); Custodian and IdentityHub go through
+        // SET_MEMBERSHIP. For IdentityHub that step does not call the Custodian: it verifies that the BPN and
+        // Membership credentials were issued through the credential steps (see SetMembership).
         var walletProvider = walletProviderResolver.Provider;
         return new IApplicationChecklistService.WorkerChecklistProcessStepExecutionResult(
             ProcessStepStatusId.DONE,
@@ -290,6 +290,21 @@ public class ApplicationActivationService(
             throw new ConflictException("BusinessPartnerNumber must be set");
         }
 
+        if (walletProviderResolver.Provider == WalletProviderId.IdentityHub)
+        {
+            await EnsureIdentityHubCredentialsIssued(context).ConfigureAwait(ConfigureAwaitOptions.None);
+            return new IApplicationChecklistService.WorkerChecklistProcessStepExecutionResult(
+                ProcessStepStatusId.DONE,
+                entry =>
+                {
+                    entry.Comment = IdentityHubMembershipComment;
+                },
+                Enumerable.Repeat(ProcessStepTypeId.SET_CX_MEMBERSHIP_IN_BPDM, 1),
+                null,
+                true,
+                null);
+        }
+
         var resultMessage = await custodianService.SetMembership(businessPartnerNumber, cancellationToken).ConfigureAwait(ConfigureAwaitOptions.None);
         return new IApplicationChecklistService.WorkerChecklistProcessStepExecutionResult(
             ProcessStepStatusId.DONE,
@@ -301,6 +316,63 @@ public class ApplicationActivationService(
             null,
             true,
             null);
+    }
+
+    private const string IdentityHubMembershipComment = "Membership is held as a credential in the IdentityHub wallet; the Custodian is not used";
+
+    private static readonly IReadOnlyList<(ApplicationChecklistEntryTypeId Entry, ProcessStepTypeId AwaitStep, string Credential)> IdentityHubCredentials =
+    [
+        (ApplicationChecklistEntryTypeId.BPNL_CREDENTIAL, ProcessStepTypeId.AWAIT_BPN_CREDENTIAL_RESPONSE, "BPN"),
+        (ApplicationChecklistEntryTypeId.MEMBERSHIP_CREDENTIAL, ProcessStepTypeId.AWAIT_MEMBERSHIP_CREDENTIAL_RESPONSE, "Membership")
+    ];
+
+    /// <summary>
+    /// With the IdentityHub wallet, membership is the Membership credential, so there is nothing to set in the
+    /// Custodian. Activation must still not proceed on a checklist entry that says DONE without an issued credential
+    /// (for example an entry advanced by hand): the latest await step of each credential must have ended DONE,
+    /// which only the issued poll or the successful callback produce. Otherwise the step fails with a reason and the
+    /// existing RETRIGGER_SET_MEMBERSHIP becomes available once the credentials are really issued.
+    /// </summary>
+    private async Task EnsureIdentityHubCredentialsIssued(IApplicationChecklistService.WorkerChecklistProcessStepData context)
+    {
+        var history = await portalRepositories.GetInstance<IApplicationRepository>()
+            .GetChecklistProcessStepHistory(context.ApplicationId, IdentityHubCredentials.Select(c => c.AwaitStep))
+            .ToListAsync()
+            .ConfigureAwait(false);
+        var latest = history
+            .GroupBy(step => step.ProcessStepTypeId)
+            .ToDictionary(group => group.Key, group => group.MaxBy(step => step.DateCreated).ProcessStepStatusId);
+
+        string? NotIssuedReason(ApplicationChecklistEntryTypeId entry, ProcessStepTypeId awaitStep)
+        {
+            if (!context.Checklist.TryGetValue(entry, out var entryStatus))
+            {
+                return $"checklist entry {entry} is missing";
+            }
+
+            if (entryStatus != ApplicationChecklistEntryStatusId.DONE)
+            {
+                return $"checklist entry {entry} is {entryStatus}";
+            }
+
+            if (!latest.TryGetValue(awaitStep, out var stepStatus))
+            {
+                return $"no {awaitStep} step ever ran";
+            }
+
+            return stepStatus == ProcessStepStatusId.DONE ? null : $"latest {awaitStep} is {stepStatus}";
+        }
+
+        var missing = IdentityHubCredentials
+            .Select(c => (c.Credential, Reason: NotIssuedReason(c.Entry, c.AwaitStep)))
+            .Where(x => x.Reason != null)
+            .Select(x => $"{x.Credential} credential ({x.Reason})")
+            .ToList();
+
+        if (missing.Count > 0)
+        {
+            throw new ConflictException($"Activation with the IdentityHub wallet requires issued BPN and Membership credentials; not issued: {string.Join("; ", missing)}");
+        }
     }
 
     public async Task<IApplicationChecklistService.WorkerChecklistProcessStepExecutionResult> SetCxMembership(IApplicationChecklistService.WorkerChecklistProcessStepData context, CancellationToken cancellationToken)

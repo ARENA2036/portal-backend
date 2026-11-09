@@ -17,6 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
+using Org.Eclipse.TractusX.Portal.Backend.Framework.Processes.Library.Enums;
 using Org.Eclipse.TractusX.Portal.Backend.Framework.Processes.Library.Models;
 using Org.Eclipse.TractusX.Portal.Backend.PortalBackend.DBAccess.Models;
 using Org.Eclipse.TractusX.Portal.Backend.PortalBackend.PortalEntities.Entities;
@@ -109,6 +110,13 @@ public interface IApplicationRepository
     /// polling step measure how long it has been waiting, so an unbounded wait can be given a deadline.
     /// </summary>
     Task<IEnumerable<DateTimeOffset>> GetActiveProcessStepsDateCreated(Guid applicationId, ProcessStepTypeId processStepTypeId);
+
+    /// <summary>
+    /// Type, status and DateCreated of every process step of the given types in the application's checklist
+    /// process, in any status. Lets a step check how an earlier step actually ended, independent of the
+    /// checklist entry status.
+    /// </summary>
+    IAsyncEnumerable<(ProcessStepTypeId ProcessStepTypeId, ProcessStepStatusId ProcessStepStatusId, DateTimeOffset DateCreated)> GetChecklistProcessStepHistory(Guid applicationId, IEnumerable<ProcessStepTypeId> processStepTypeIds);
     Task<(bool Exists, string? Holder, string? BusinessPartnerNumber, WalletInformation? WalletInformation)> GetBpnlCredentialIformationByApplicationId(Guid applicationId);
     Task<(bool Exists, string? Did, string? Bpn)> GetDidAndBpnForApplicationId(Guid applicationId);
     Task<(bool Exists, string? Did)> GetDidForApplicationId(Guid applicationId);

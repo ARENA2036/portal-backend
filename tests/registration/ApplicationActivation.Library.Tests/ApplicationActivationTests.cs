@@ -623,6 +623,135 @@ public class ApplicationActivationTests
         result.ProcessMessage.Should().BeNull();
     }
 
+    private static readonly ImmutableDictionary<ApplicationChecklistEntryTypeId, ApplicationChecklistEntryStatusId> IdentityHubChecklist = Checklist
+        .SetItem(ApplicationChecklistEntryTypeId.BPNL_CREDENTIAL, ApplicationChecklistEntryStatusId.DONE)
+        .SetItem(ApplicationChecklistEntryTypeId.MEMBERSHIP_CREDENTIAL, ApplicationChecklistEntryStatusId.DONE);
+
+    private void SetupIdentityHubMembership(params (ProcessStepTypeId Step, ProcessStepStatusId Status, int MinutesAgo)[] history)
+    {
+        A.CallTo(() => _walletProviderResolver.Provider).Returns(WalletProviderId.IdentityHub);
+        A.CallTo(() => _applicationRepository.GetBpnForApplicationIdAsync(Id)).Returns(BusinessPartnerNumber);
+        A.CallTo(() => _applicationRepository.GetChecklistProcessStepHistory(Id, A<IEnumerable<ProcessStepTypeId>>._))
+            .Returns(history.Select(h => (h.Step, h.Status, DateTimeOffset.UtcNow.AddMinutes(-h.MinutesAgo))).ToAsyncEnumerable());
+    }
+
+    [Fact]
+    public async Task SetMembership_IdentityHubWithIssuedCredentials_DoesNotCallCustodianAndSchedulesBpdmMembership()
+    {
+        // Arrange: the BPN await failed once, was retriggered and then ended DONE; Membership ended DONE.
+        SetupIdentityHubMembership(
+            (ProcessStepTypeId.AWAIT_BPN_CREDENTIAL_RESPONSE, ProcessStepStatusId.FAILED, 60),
+            (ProcessStepTypeId.AWAIT_BPN_CREDENTIAL_RESPONSE, ProcessStepStatusId.DONE, 30),
+            (ProcessStepTypeId.AWAIT_MEMBERSHIP_CREDENTIAL_RESPONSE, ProcessStepStatusId.DONE, 10));
+        var context = new IApplicationChecklistService.WorkerChecklistProcessStepData(Id, default, IdentityHubChecklist, Enumerable.Empty<ProcessStepTypeId>());
+        var entry = new ApplicationChecklistEntry(Id, ApplicationChecklistEntryTypeId.APPLICATION_ACTIVATION, ApplicationChecklistEntryStatusId.IN_PROGRESS, DateTimeOffset.UtcNow);
+
+        // Act
+        var result = await _sut.SetMembership(context, CancellationToken.None);
+
+        // Assert
+        A.CallTo(() => _custodianService.SetMembership(A<string>._, A<CancellationToken>._)).MustNotHaveHappened();
+        A.CallTo(() => _applicationRepository.GetChecklistProcessStepHistory(Id, A<IEnumerable<ProcessStepTypeId>>.That.IsSameSequenceAs(
+                new[] { ProcessStepTypeId.AWAIT_BPN_CREDENTIAL_RESPONSE, ProcessStepTypeId.AWAIT_MEMBERSHIP_CREDENTIAL_RESPONSE })))
+            .MustHaveHappenedOnceExactly();
+        result.StepStatusId.Should().Be(ProcessStepStatusId.DONE);
+        result.ScheduleStepTypeIds.Should().ContainSingle().Which.Should().Be(ProcessStepTypeId.SET_CX_MEMBERSHIP_IN_BPDM);
+        result.SkipStepTypeIds.Should().BeNull();
+        result.Modified.Should().BeTrue();
+        result.ModifyChecklistEntry!.Invoke(entry);
+        entry.Comment.Should().Contain("IdentityHub").And.Contain("Custodian is not used");
+        entry.ApplicationChecklistEntryStatusId.Should().Be(ApplicationChecklistEntryStatusId.IN_PROGRESS);
+    }
+
+    // The legacy application c5182556 on Alpha: both entries were set DONE by hand, the BPN await had FAILED and
+    // no Membership step ever ran. Activation must stop with the reason, not activate without credentials.
+    [Fact]
+    public async Task SetMembership_IdentityHubWithManuallyAdvancedEntries_ThrowsWithBothReasons()
+    {
+        SetupIdentityHubMembership((ProcessStepTypeId.AWAIT_BPN_CREDENTIAL_RESPONSE, ProcessStepStatusId.FAILED, 30));
+        var context = new IApplicationChecklistService.WorkerChecklistProcessStepData(Id, default, IdentityHubChecklist, Enumerable.Empty<ProcessStepTypeId>());
+
+        var ex = await Assert.ThrowsAsync<ConflictException>(() => _sut.SetMembership(context, CancellationToken.None));
+
+        ex.Message.Should().Contain("requires issued BPN and Membership credentials")
+            .And.Contain("BPN credential (latest AWAIT_BPN_CREDENTIAL_RESPONSE is FAILED)")
+            .And.Contain("Membership credential (no AWAIT_MEMBERSHIP_CREDENTIAL_RESPONSE step ever ran)")
+            .And.NotContain(BusinessPartnerNumber);
+        A.CallTo(() => _custodianService.SetMembership(A<string>._, A<CancellationToken>._)).MustNotHaveHappened();
+    }
+
+    [Theory]
+    [InlineData(ApplicationChecklistEntryTypeId.BPNL_CREDENTIAL, ApplicationChecklistEntryStatusId.FAILED, "BPN credential (checklist entry BPNL_CREDENTIAL is FAILED)")]
+    [InlineData(ApplicationChecklistEntryTypeId.MEMBERSHIP_CREDENTIAL, ApplicationChecklistEntryStatusId.IN_PROGRESS, "Membership credential (checklist entry MEMBERSHIP_CREDENTIAL is IN_PROGRESS)")]
+    public async Task SetMembership_IdentityHubWithEntryNotDone_Throws(ApplicationChecklistEntryTypeId entryTypeId, ApplicationChecklistEntryStatusId status, string expected)
+    {
+        SetupIdentityHubMembership(
+            (ProcessStepTypeId.AWAIT_BPN_CREDENTIAL_RESPONSE, ProcessStepStatusId.DONE, 30),
+            (ProcessStepTypeId.AWAIT_MEMBERSHIP_CREDENTIAL_RESPONSE, ProcessStepStatusId.DONE, 10));
+        var context = new IApplicationChecklistService.WorkerChecklistProcessStepData(Id, default, IdentityHubChecklist.SetItem(entryTypeId, status), Enumerable.Empty<ProcessStepTypeId>());
+
+        var ex = await Assert.ThrowsAsync<ConflictException>(() => _sut.SetMembership(context, CancellationToken.None));
+
+        ex.Message.Should().Contain(expected);
+    }
+
+    [Fact]
+    public async Task SetMembership_IdentityHubWithMissingEntry_Throws()
+    {
+        SetupIdentityHubMembership(
+            (ProcessStepTypeId.AWAIT_BPN_CREDENTIAL_RESPONSE, ProcessStepStatusId.DONE, 30),
+            (ProcessStepTypeId.AWAIT_MEMBERSHIP_CREDENTIAL_RESPONSE, ProcessStepStatusId.DONE, 10));
+        var context = new IApplicationChecklistService.WorkerChecklistProcessStepData(Id, default, IdentityHubChecklist.Remove(ApplicationChecklistEntryTypeId.MEMBERSHIP_CREDENTIAL), Enumerable.Empty<ProcessStepTypeId>());
+
+        var ex = await Assert.ThrowsAsync<ConflictException>(() => _sut.SetMembership(context, CancellationToken.None));
+
+        ex.Message.Should().Contain("Membership credential (checklist entry MEMBERSHIP_CREDENTIAL is missing)");
+    }
+
+    [Fact]
+    public async Task SetMembership_IdentityHubWhenLatestAwaitIsNotDone_Throws()
+    {
+        // An earlier DONE does not count if a later await (after a retrigger) is still running or failed.
+        SetupIdentityHubMembership(
+            (ProcessStepTypeId.AWAIT_BPN_CREDENTIAL_RESPONSE, ProcessStepStatusId.DONE, 60),
+            (ProcessStepTypeId.AWAIT_BPN_CREDENTIAL_RESPONSE, ProcessStepStatusId.TODO, 5),
+            (ProcessStepTypeId.AWAIT_MEMBERSHIP_CREDENTIAL_RESPONSE, ProcessStepStatusId.DONE, 10));
+        var context = new IApplicationChecklistService.WorkerChecklistProcessStepData(Id, default, IdentityHubChecklist, Enumerable.Empty<ProcessStepTypeId>());
+
+        var ex = await Assert.ThrowsAsync<ConflictException>(() => _sut.SetMembership(context, CancellationToken.None));
+
+        ex.Message.Should().Contain("BPN credential (latest AWAIT_BPN_CREDENTIAL_RESPONSE is TODO)").And.NotContain("Membership credential (");
+    }
+
+    [Fact]
+    public async Task SetMembership_IdentityHubWithMissingBpn_StillThrowsBeforeAnyCheck()
+    {
+        A.CallTo(() => _walletProviderResolver.Provider).Returns(WalletProviderId.IdentityHub);
+        A.CallTo(() => _applicationRepository.GetBpnForApplicationIdAsync(Id)).Returns<string?>(null);
+        var context = new IApplicationChecklistService.WorkerChecklistProcessStepData(Id, default, IdentityHubChecklist, Enumerable.Empty<ProcessStepTypeId>());
+
+        var ex = await Assert.ThrowsAsync<ConflictException>(() => _sut.SetMembership(context, CancellationToken.None));
+
+        ex.Message.Should().Be("BusinessPartnerNumber must be set");
+        A.CallTo(() => _applicationRepository.GetChecklistProcessStepHistory(A<Guid>._, A<IEnumerable<ProcessStepTypeId>>._)).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public async Task SetMembership_CustodianProvider_StillCallsCustodianWithoutCredentialCheck()
+    {
+        A.CallTo(() => _walletProviderResolver.Provider).Returns(WalletProviderId.Custodian);
+        A.CallTo(() => _applicationRepository.GetBpnForApplicationIdAsync(Id)).Returns(BusinessPartnerNumber);
+        A.CallTo(() => _custodianService.SetMembership(BusinessPartnerNumber, A<CancellationToken>._)).Returns("custodian ok");
+        var context = new IApplicationChecklistService.WorkerChecklistProcessStepData(Id, default, Checklist, Enumerable.Empty<ProcessStepTypeId>());
+
+        var result = await _sut.SetMembership(context, CancellationToken.None);
+
+        A.CallTo(() => _custodianService.SetMembership(BusinessPartnerNumber, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _applicationRepository.GetChecklistProcessStepHistory(A<Guid>._, A<IEnumerable<ProcessStepTypeId>>._)).MustNotHaveHappened();
+        result.StepStatusId.Should().Be(ProcessStepStatusId.DONE);
+        result.ScheduleStepTypeIds.Should().ContainSingle().Which.Should().Be(ProcessStepTypeId.SET_CX_MEMBERSHIP_IN_BPDM);
+    }
+
     #endregion
 
     #region SET_CX_MEMBERSHIP_IN_BPDM

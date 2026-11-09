@@ -538,6 +538,14 @@ public class ApplicationRepository(PortalDbContext portalDbContext)
                 .Select(ps => ps.DateCreated))
             .SingleOrDefaultAsync()!;
 
+    public IAsyncEnumerable<(ProcessStepTypeId ProcessStepTypeId, ProcessStepStatusId ProcessStepStatusId, DateTimeOffset DateCreated)> GetChecklistProcessStepHistory(Guid applicationId, IEnumerable<ProcessStepTypeId> processStepTypeIds) =>
+        portalDbContext.CompanyApplications
+            .Where(ca => ca.Id == applicationId)
+            .SelectMany(ca => ca.ChecklistProcess!.ProcessSteps)
+            .Where(ps => processStepTypeIds.Contains(ps.ProcessStepTypeId))
+            .Select(ps => new ValueTuple<ProcessStepTypeId, ProcessStepStatusId, DateTimeOffset>(ps.ProcessStepTypeId, ps.ProcessStepStatusId, ps.DateCreated))
+            .ToAsyncEnumerable();
+
     public Task<(bool Exists, string? Holder, string? BusinessPartnerNumber, WalletInformation? WalletInformation)> GetBpnlCredentialIformationByApplicationId(Guid applicationId) =>
         portalDbContext.CompanyApplications
             .Where(ca => ca.Id == applicationId)
