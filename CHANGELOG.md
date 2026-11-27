@@ -4,6 +4,9 @@ New features, fixed bugs, known defects and other noteworthy changes to each rel
 
 ## Unreleased
 
+## Security
+  * upgraded Java to `21.0.13.1+2` in the SonarCloud and dependency-check workflows to address Java security vulnerabilities.
+
 ## 2.6.0
 
 ### Feature
